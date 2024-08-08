@@ -4,10 +4,14 @@
 
 @layer base {
     .navlink__popup {
-        @apply mx-3 py-3 hover:text-hoverText border-b border-divideLight dark:border-divideDark
+        @apply mx-3 py-3 hover:text-hoverText border-b border-divideLight dark:border-divideDark transition
     }
 
     .navlink__normal {
-        @apply m-3 hover:text-hoverText
+        @apply m-3 hover:text-hoverText transition
+    }
+
+    .navlink_social {
+        @apply fill-zinc500 dark:fill-zinc400 transition group-hover:fill-zinc600 dark:group-hover:fill-zinc300
     }
 }

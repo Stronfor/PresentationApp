@@ -8,7 +8,7 @@ const emits = defineEmits(["close-popup"])
 <template>
     <div class="flex justify-center">
         <div id="popupWrapper" class="fixed inset-0 backdrop-blur-sm bg-borderDark/40 dark:bg-borderDark/95"></div>
-        <div class="absolute top-0 mt-10 p-5 rounded-[1.5rem] w-[95%] bg-lightBg dark:bg-darkApp dark:text-textLight">
+        <div id="popup" class="absolute top-0 mt-10 p-5 rounded-[1.5rem] w-[95%] bg-lightBg dark:bg-darkApp dark:text-textLight">
             <div class="flex justify-between">
                 <span class="mx-3">{{ title }}</span>
                 <button @click="emits('close-popup')">
@@ -21,3 +21,22 @@ const emits = defineEmits(["close-popup"])
         </div>
     </div>
 </template>
+<style scoped>
+#popupWrapper {
+    transition: 1s;
+    animation: growe .1s forwards;
+}
+
+#popup{
+  animation: growe .15s forwards;
+}
+
+@keyframes growe {
+    from {
+        scale: 0
+    }
+    to {
+        scale: 1
+    }
+}
+</style>
