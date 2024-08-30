@@ -11,7 +11,7 @@ const emit = defineEmits(["click-on-menu"]);
 <template>
   <nav
     v-if="width > 768"
-    class="border-2 border-borderLight rounded-3xl mx-3 py-2 px-4 dark:bg-[#252529] dark:border-borderDark"
+    class="border-2 border-borderLight rounded-3xl mx-3 py-2 px-4 dark:bg-[#252529] dark:border-borderDark shadow-sm"
   >
     <RouterLink
       v-for="{ name, link } in menuList"
@@ -24,7 +24,7 @@ const emit = defineEmits(["click-on-menu"]);
   <nav v-else>
     <button
       @click="emit('click-on-menu')"
-      class="h-12 w-24 mr-3 rounded-full border-2 border-borderLight hover:bg-lightBg dark:border-borderDark dark:hover:bg-darkBg flex justify-center items-center"
+      class="h-12 w-24 mr-3 rounded-full border-2 shadow-sm border-borderLight hover:bg-lightBg dark:border-borderDark dark:hover:bg-darkBg flex justify-center items-center"
     >
       <span>Menu</span>
       <span>

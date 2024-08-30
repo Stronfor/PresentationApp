@@ -1,8 +1,17 @@
 <script setup lang="ts">
+import { defineAsyncComponent, type DefineComponent } from "vue";
 import PostPreview from "../../public/posts/postsPreview"
-import MyJobs from "../../public/MyJobs"
+import MyJobs from "../../public/posts/MyJobs"
 
 import Letter from "@/components/icons/Letter.vue"
+import Portfolio from "@/components/icons/Portfolio.vue"
+
+const iconsMyJob: any = {
+    'Starbucks': defineAsyncComponent(() => import("@/components/icons/Starbucks.vue")),
+    'Airbnb': defineAsyncComponent(() => import("@/components/icons/Airbnb.vue")),
+    'Facebook': defineAsyncComponent(() => import("@/components/icons/Facebook.vue")),
+    'Google': defineAsyncComponent(() => import("@/components/icons/Google.vue")),
+}
 
 </script>
 
@@ -40,33 +49,27 @@ import Letter from "@/components/icons/Letter.vue"
             </div>
             <div id="work_history" class="border border-zinc200 dark:border-zinc800 p-8 rounded-2xl">
                 <div class="flex gap-3">
-                    <Letter height="1.5rem" width="1.5rem" _class="text-zinc500" />
+                    <Portfolio height="1.5rem" width="1.5rem" _class="text-zinc500" />
                     <h4 class="font-semibold">Work</h4>
                 </div>
                 <div class="mt-6">
-                    <div class="flex gap-4 items-center mb-6" v-for="{name, period, positionAtWork} of MyJobs" :key="name">
-                        <div>
-                            icon
+                    <div class="flex gap-4 items-center mb-4" v-for="{name, period, positionAtWork} of MyJobs" :key="name">
+                        <div class="p-2 border border-zinc200 dark:border-zinc800 dark:bg-zinc800 rounded-full">
+                            <component :is="iconsMyJob[name]"  height="2rem" width="2rem" />
                         </div>
                         <div class="w-full">
                             <p>{{ name }}</p>
-                            <div class="flex justify-between">
-                                <p class="">{{ positionAtWork }}</p>
-                                <p class="">{{ period }}</p>
+                            <div class="flex justify-between text-sm text-zinc400 dark:text-zinc500 leading-8">
+                                <p>{{ positionAtWork }}</p>
+                                <p>{{ period }}</p>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="mt-6">
-                    <button class="w-full bg-zinc800 p-2 rounded-md">Download CV !</button>
+                    <button class="w-full hover:bg-zinc200 dark:hover:bg-zinc700 transition text-zinc800 bg-zinc100 dark:text-zinc200 dark:bg-zinc800 p-2 rounded-md">Download CV</button>
                 </div>
             </div>
         </div>
     </div>
 </template>
-<style scoped>
-    
-   /*  div input:focus {
-        outline: 2px solid red;
-    } */
-</style>

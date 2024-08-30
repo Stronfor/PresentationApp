@@ -43,10 +43,10 @@ const closePopupOutsideClick = (e: Event) => {
   <div
     @click="closePopupOutsideClick"
     :class="{ dark: mode === 'dark' }"
-    class="text-textDark bg-zinc100 dark:bg-black dark:text-textLight"
+    class="text-textDark bg-zinc100 dark:bg-black dark:text-textLight overflow-y-auto"
   >
     <div
-      class="w-full sm:max-w-[1208px] mx-auto sm:px-20 bg-zinc50 dark:bg-zinc900 shadow-sm"
+      class="w-full sm:max-w-[90%] m-auto sm:px-20 px-2 bg-zinc50 dark:bg-zinc900 shadow-sm"
     >
       <header class="h-20">
         <div class="flex items-center justify-end md:justify-between pt-6 mb-5">
@@ -54,7 +54,7 @@ const closePopupOutsideClick = (e: Event) => {
           <Navigation @click-on-menu="isHiddenPopup = !isHiddenPopup" />
           <button
             @click="changeColorMode"
-            class="h-11 w-12 md:mr-10 rounded-full border-2 border-borderLight hover:bg-lightBg dark:border-borderDark dark:hover:bg-darkBg"
+            class="h-11 w-12 md:mr-10 rounded-full border-2 shadow-sm shadow-zinc300 dark:shadow-sm dark:shadow-zinc600 border-borderLight hover:bg-lightBg dark:border-borderDark dark:hover:bg-darkBg"
           >
             <Light
               v-if="mode === 'light'"
@@ -76,6 +76,17 @@ const closePopupOutsideClick = (e: Event) => {
       <main>
         <RouterView />
       </main>
+      <footer class="border-t border-zinc200 dark:border-zinc700 py-12">
+        <div class="md:justify-between md:flex-row flex flex-col items-center">
+          <menu class="flex gap-3 text-sm">
+            <RouterLink class="navlink__normal" to="/about">About</RouterLink>
+            <RouterLink class="navlink__normal" to="/projects">Projects</RouterLink>
+            <RouterLink class="navlink__normal" to="/articles">Articles</RouterLink>
+            <RouterLink class="navlink__normal" to="/uses">Uses</RouterLink>
+          </menu>
+          <span class="dark:text-zinc600 m-3 text-zinc400 text-sm font-extralight">© 2024 Spencer Sharp. All rights reserved.</span>
+        </div>
+      </footer>
     </div>
     <Popup
       :class="{ hidden: isHiddenPopup }"

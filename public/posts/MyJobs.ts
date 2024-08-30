@@ -1,9 +1,9 @@
-import type { JobType } from "../src/types/Job.type"
+import type { JobType } from "../../src/types/Job.type"
 
 
 export default<JobType[]>[
     {
-        name: "Planeteria",
+        name: "Google",
         period: "2019 - Present",
         positionAtWork: "CEO"
     },

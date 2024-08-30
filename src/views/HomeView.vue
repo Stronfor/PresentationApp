@@ -10,6 +10,7 @@ import Linkedin_icon from "../components/icons/Linkedin.vue";
 </script>
 
 <template>
+  <div class="bg-zinc50 dark:bg-zinc900 pb-10">
     <div class="flex items-center justify-between bg-[url('@/assets/img/Timoty.png')] bg-no-repeat bg-right-top h-[450px]">
       <div class="mt-28 lg:pr-14 lg:max-w-[70%] w-full">
         <h1 class="text-4xl font-bold sm:text-5xl tracking-tight mb-6">Software designer, founder,<br/> and amateur asteonaut.</h1>
@@ -29,4 +30,5 @@ import Linkedin_icon from "../components/icons/Linkedin.vue";
     <div class="mt-24">
       <PostPreview />
     </div>
+  </div>
 </template>
