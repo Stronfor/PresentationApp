@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import HomeImages from "@/components/HomeImages.vue";
+import PostPreview from "@/components/PostPreview.vue";
 
 import Twitter_icon from "../components/icons/Twitter.vue";
 import Instagram_icon from "../components/icons/Instagram.vue";
@@ -25,4 +26,7 @@ import Linkedin_icon from "../components/icons/Linkedin.vue";
       </div>
     </div>
     <HomeImages />
+    <div class="mt-24">
+      <PostPreview />
+    </div>
 </template>

@@ -28,6 +28,8 @@ export default {
       zinc700: '#3f3f46',
       zinc800: '#27272a',
       zinc900: '#18181b',
+
+      teal500: '#14b8a6'
     },
     extend: {
       animation: {

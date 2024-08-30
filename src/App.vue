@@ -10,6 +10,15 @@ import { useColorMode } from "@vueuse/core";
 import Light from "./components/icons/Light.vue";
 import Dark from "./components/icons/Dark.vue";
 
+
+import emitter from "@/composables/eventEmitter"
+
+// test for emitter (emit comes from AboutView)
+emitter.on('xyu', (data: Object) => console.log(data))
+emitter.once('once', (data: Object) => console.log('Emitter: once ', data))
+
+
+
 const mode = useColorMode(); // Ref<'dark' | 'light'>
 
 const changeColorMode = () => {
@@ -39,7 +48,7 @@ const closePopupOutsideClick = (e: Event) => {
     <div
       class="w-full sm:max-w-[1208px] mx-auto sm:px-20 bg-zinc50 dark:bg-zinc900 shadow-sm"
     >
-      <header class="h-16">
+      <header class="h-20">
         <div class="flex items-center justify-end md:justify-between pt-6 mb-5">
           <div class="w-5"></div>
           <Navigation @click-on-menu="isHiddenPopup = !isHiddenPopup" />
