@@ -5,7 +5,7 @@
   
 <script setup lang="ts">
   defineProps({
-    _class: {type: String, required: true},
+    _class: {type: String, default: ""},
     width: {type: String, default: "1em"},
     height: {type: String, default: "1em"}
   })

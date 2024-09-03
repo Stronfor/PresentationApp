@@ -1,0 +1,1 @@
+/* export {default as Xyu}  from './components/Xyu.vue' */

@@ -10,7 +10,6 @@ import { useColorMode } from "@vueuse/core";
 import Light from "./components/icons/Light.vue";
 import Dark from "./components/icons/Dark.vue";
 
-
 import emitter from "@/composables/eventEmitter"
 
 // test for emitter (emit comes from AboutView)
@@ -43,7 +42,7 @@ const closePopupOutsideClick = (e: Event) => {
   <div
     @click="closePopupOutsideClick"
     :class="{ dark: mode === 'dark' }"
-    class="text-textDark bg-zinc100 dark:bg-black dark:text-textLight overflow-y-auto"
+    class="text-textDark bg-zinc100 dark:bg-black dark:text-textLight overflow-hidden"
   >
     <div
       class="w-full sm:max-w-[90%] m-auto sm:px-20 px-2 bg-zinc50 dark:bg-zinc900 shadow-sm"
@@ -84,7 +83,7 @@ const closePopupOutsideClick = (e: Event) => {
             <RouterLink class="navlink__normal" to="/articles">Articles</RouterLink>
             <RouterLink class="navlink__normal" to="/uses">Uses</RouterLink>
           </menu>
-          <span class="dark:text-zinc600 m-3 text-zinc400 text-sm font-extralight">© 2024 Spencer Sharp. All rights reserved.</span>
+          <span class="dark:text-zinc600 m-3 text-zinc400 text-sm font-extralight">© 2024 Sergii Kabaliuk. All rights reserved.</span>
         </div>
       </footer>
     </div>
