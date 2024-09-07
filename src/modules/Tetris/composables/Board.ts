@@ -16,8 +16,8 @@ export default class Board implements IBoard {
         }
     }
 
-    getCell(coord: [x: number, y: number]){
-        return this.cells[coord[1]].find(cell => cell.x === coord[0])
+    getCell([x, y]: number[]){
+        return this.cells[y][x]
     }
 
 }

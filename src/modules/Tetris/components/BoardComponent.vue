@@ -8,8 +8,7 @@
 
     import { ColorsEnum } from "../composables/types";
 
-    import type {IFigures} from "../composables/types"
-
+    import type {IBoard, IFigures} from "../composables/types"
 
 
     const restart = () => {
@@ -18,17 +17,16 @@
         return tetrisBoard
     }
 
-    const board = ref(new Board());
-    
+    const board = ref<IBoard>(new Board());
     board.value.initCells()
     
-    
+   
     const initialNewFigure = (type: string) => {
         const figure = FigureFactory.createFigure(type)
         figure.figureForm.forEach((item: number[]) => {
-            const cell = ref(board.value.getCell(item))
-            cell.value?.changeColor(figure.color);
-            cell.value?.changeEmpty(false)
+            const cell = board.value.getCell(item)
+            cell?.changeColor(figure.color);
+            cell?.changeEmpty(false)
         })
         return figure
     }
@@ -49,54 +47,93 @@
     const currentFigure = ref<IFigures>(initialNewFigure(randomFigure()))
 
     const moveFigure = () => {
-        const canFIgureMove = currentFigure.value.canMove(board.value)
+        const canFIgureMoveDown = currentFigure.value.canMoveDown(board.value)
 
-        if(canFIgureMove){
-            currentFigure.value.figureForm.forEach((item: number[]) => {
-                const cell = ref(board.value.getCell(item))
-                cell.value?.changeColor(ColorsEnum.DEFAULT);
-                cell.value?.changeEmpty(true)
-            })
-            currentFigure.value.move()
-
-            currentFigure.value.figureForm.forEach((item: number[]) => {
-                const cell = ref(board.value.getCell(item))
-                cell.value?.changeColor(currentFigure.value.color);
-                cell.value?.changeEmpty(false)
-            })
+        if(canFIgureMoveDown){
+            currentFigure.value.move(board.value)
         } else {
-           return currentFigure.value = initialNewFigure(randomFigure())
+            if(board.value.cells[0][4].isEmpty === false || board.value.cells[0][5].isEmpty === false){
+               return /* board.value = restart() */ StartStopGame(false)
+            }
+            return currentFigure.value = initialNewFigure(randomFigure())
         }
         
     }
 
     let GameCircle: number | null = null
 
-    const Game = () => {
-        GameCircle = setTimeout(()=>{
+    const StartStopGame = (start: boolean) => {
 
-            moveFigure()
+            if(GameCircle !== null) clearTimeout(GameCircle)
+            if(start){
+                GameCircle = setTimeout(()=>{
 
-            clearTimeout(GameCircle)
-            Game()
+                    moveFigure()
+                    clearTimeout(GameCircle)
+                    StartStopGame(true)
 
-        },300)
+                },500)
+            }
+        
     }
-    Game()
-   
+    const isGameStarted = ref(true)
+    StartStopGame(true)
+
+    const Pause = () => {
+        if(isGameStarted.value){
+            StartStopGame(false);
+            isGameStarted.value = false;
+        } else {
+            StartStopGame(true);
+            isGameStarted.value  = true;
+        }
+    }
+
+    const Restart = () => {
+        board.value = new Board();
+        board.value.initCells();
+        currentFigure.value = initialNewFigure(randomFigure()); 
+        StartStopGame(true);
+        isGameStarted.value = true;
+    }
+
+
+    document.addEventListener('keydown', (e) => {
+        e.preventDefault()
+        if(e.key === "ArrowLeft"){
+            return currentFigure.value.moveLeft()
+        }
+    })
+
+    document.addEventListener('keydown', (e) => {
+        e.preventDefault()
+        if(e.key === "ArrowRight"){
+            return currentFigure.value.moveRight()
+        }
+    })
 
 </script>
 <template>
-    <div id="tetrisBoard" class="w-full">
-        <div class="row" v-for="row, index in board.cells" :key="index">
-            <div class="cell" :style="`background-color: ${col.color}`" v-for="col in row" :key="col.id"></div>
+    <div class="flex gap-8 items-center">
+        <div class="w-[30%] flex justify-center gap-4">
+            <button @click="currentFigure.moveLeft()" class="border-2 p-4 rounded-md">Left</button>
+            <button @click="currentFigure.moveRight()" class="border-2 p-4 rounded-md">Right</button>
+            <button @click="" class="border-2 p-4 rounded-md">Down</button>
+            <button @click="Pause" class="border-2 p-4 rounded-md">Pause</button>
+        </div>
+        <div id="tetrisBoard" >
+            <div class="row" v-for="row, index in board.cells" :key="index">
+                <div class="cell" :style="`background-color: ${col.color}`" style="color: blueviolet" v-for="col in row" :key="col.id"></div>
+            </div>
+        </div>
+        <div class="w-[30%] flex justify-center">
+            <button @click="Restart" class="border-2 p-4 rounded-md">Restart</button>
         </div>
     </div>
 </template>
 <style scoped>
 
     #tetrisBoard {
-        margin: auto;
         width: fit-content;
         border: 10px solid greenyellow;
     }
@@ -114,4 +151,4 @@
         border: 1px solid rgb(48, 47, 47);
     }
 
-</style>const 
+</style>

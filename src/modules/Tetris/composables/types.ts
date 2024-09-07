@@ -10,9 +10,12 @@ export interface IFigures {
     color: ColorsEnum
     figureForm: number[][]
     downCells: number[][]
+
     about():string
-    move():void
-    canMove(board: IBoard): boolean
+    move(board: IBoard):void
+    canMoveDown(board: IBoard): boolean
+    moveRight(): void
+    moveLeft(): void
 }
 
 export interface ICell {
