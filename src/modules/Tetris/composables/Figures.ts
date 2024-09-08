@@ -1,40 +1,50 @@
 import {ColorsEnum} from "./types"
-import type { IBoard, IFigures } from "./types"
+import { DegEnum, type IBoard, type IFigures } from "./types"
 
 
-class Figura {
-    nextTickMoveDerection: string | null = null;
+class Figura implements IFigures {
+    color: ColorsEnum = ColorsEnum.DEFAULT;
+    degree: DegEnum = DegEnum.DEFAULT;
+    figureForm: number[][] = [];
+    downCells: number[][] = [];
+    rightCells: number[][] = [];
+    leftCells: number[][] = [];
+    name: string = '';
+    nextTickMoveDerection: string |  DegEnum | null = null;
 
+    about() {
+        return {
+            name: this.name,
+            degree: this.degree,
+            form: this.figureForm,
+            color: this.color,
+            leftCells: this.leftCells,
+            rightCells: this.rightCells,
+            downCells: this.downCells
+        }
+    };
 
-}
-
-
-
-class Figura_I implements IFigures {
-    readonly color: ColorsEnum = ColorsEnum.GREEN
-    figureForm :number[][];
-    downCells: number[][];
-    rightCells: number[][];
-    leftCells: number[][];
-    nextTickMoveDerection: string | null = null;
-
-    constructor(){
-        this.figureForm = [[3,0],[4,0],[5,0],[6,0]];
-        this.downCells = [[3,0],[4,0],[5,0],[6,0]];
-        this.rightCells = [[6,0]];
-        this.leftCells = [[3,0]];
-    }
-
-    about(): string {
-        return 'figure I'
-    }
-
-    moved(direction: string | null, board: IBoard){
+    clearFigurePositionOnBoard(board: IBoard){
         this.figureForm.forEach((item) => {
             const cell = board.getCell(item)
-            cell?.changeColor(ColorsEnum.DEFAULT);
-            cell?.changeEmpty(true)
+            if(cell){
+                cell?.changeColor(ColorsEnum.DEFAULT);
+                cell?.changeEmpty(true);
+            }
         })
+    };
+
+    setFigurePositionOnBoard(board: IBoard){
+        this.figureForm.forEach((item) => {
+            const cell = board.getCell(item)
+            if (cell) {
+                cell.changeColor(this.color);
+                cell.changeEmpty(false);
+            }
+        })
+    };
+
+    moving(direction: string | null | DegEnum, board: IBoard){
         
         if(direction === 'right'){
             this.downCells.forEach((item) => item[0]+=1);
@@ -56,22 +66,23 @@ class Figura_I implements IFigures {
                 cell?.changeColor(this.color);
                 cell?.changeEmpty(false)
             });
+        } else if(direction === DegEnum.ONE){
+           this.rotate(direction, board);
         } else {
-            this.downCells.forEach((item) => item[1]+=1)
-            this.rightCells.forEach((item) => item[1]+=1)
-            this.leftCells.forEach((item) => item[1]+=1)
+            
             this.figureForm.forEach((item) => {
                 item[1]+=1;
                 const cell = board.getCell(item)
                 cell?.changeColor(this.color);
                 cell?.changeEmpty(false)
-            })
-            
+            });
+            this.downCells.forEach((item) => item[1]+=1);
+            this.rightCells.forEach((item) => item[1]+=1);
+            this.leftCells.forEach((item) => item[1]+=1);
         }
-    }
+    };
 
-    move(board: IBoard){
-
+    chackMoveDerection(board: IBoard){
         if(this.nextTickMoveDerection){
             if(this.nextTickMoveDerection === "right"){
                 let isCanMove: boolean = false
@@ -101,9 +112,9 @@ class Figura_I implements IFigures {
 
                     })
                 } 
-
                 if(isCanMove){
-                    this.moved(this.nextTickMoveDerection, board);
+                    this.clearFigurePositionOnBoard(board)
+                    this.moving(this.nextTickMoveDerection, board);
                 }
             } else if (this.nextTickMoveDerection === "left"){
                 let isCanMove: boolean = false
@@ -133,39 +144,136 @@ class Figura_I implements IFigures {
                     })
                 }
                 if(isCanMove){
-                    this.moved(this.nextTickMoveDerection, board);
+                    this.clearFigurePositionOnBoard(board)
+                    this.moving(this.nextTickMoveDerection, board);
                 }
+            } else if (this.nextTickMoveDerection === DegEnum.ONE){
+                this.clearFigurePositionOnBoard(board)
+                this.moving(this.nextTickMoveDerection, board);
             }
             this.nextTickMoveDerection = null;
         } else {
-            this.moved(this.nextTickMoveDerection, board);
+            this.clearFigurePositionOnBoard(board)
+            this.moving(null, board);
         }
-    }
+    };
 
     canMoveDown(board: IBoard){
-        const finishToBoard = this.downCells.some((item) => item[1] > 18 || board.cells[item[1]+1][item[0]].isEmpty === false)
-        return !finishToBoard 
-    }
+        let isCanMove: boolean = false
+        let isFind: boolean = false
+
+        this.downCells.forEach(([x, y]) => {
+            if(!isFind){
+                if(y < 19) {
+                    isCanMove = true;
+                } else{
+                    isCanMove = false;
+                    isFind = true
+                }
+            }
+        })
+        if(isCanMove){
+            let isFind: boolean = false
+            this.downCells.forEach(([x, y]) => {
+                if(!isFind){
+                    if(board.getCell([x, y + 1])?.isEmpty){
+                        isCanMove = true;
+                    } else {
+                        isCanMove = false;
+                        isFind = true;
+                    }
+                }
+            })
+        } 
+        if(isCanMove){
+           return true;
+        }
+        return  false;
+    };
 
     moveRight(){
         this.nextTickMoveDerection = 'right'
-    }
+    };
 
     moveLeft(){
         this.nextTickMoveDerection = 'left'
-    }
-    
+    };
+
+    moveDeg(deg: DegEnum) {
+        this.nextTickMoveDerection = deg;
+    };
+
+    rotate(deg: DegEnum, board: IBoard): void {}
+
 }
 
-class Figura_O implements IFigures {
-    readonly color: ColorsEnum = ColorsEnum.PURPLE
-    figureForm :number[][];
-    downCells: number[][];
-    rightCells: number[][];
-    leftCells: number[][];
-    nextTickMoveDerection: string | null = null;
+class Figura_I extends Figura {
+    readonly color: ColorsEnum = ColorsEnum.GREEN
 
     constructor(){
+        super()
+        this.name = 'I';
+        this.degree = DegEnum.DEFAULT;
+        this.figureForm = [[3,0],[4,0],[5,0],[6,0]];
+        this.downCells = [[3,0],[4,0],[5,0],[6,0]];
+        this.rightCells = [[6,0]];
+        this.leftCells = [[3,0]];
+    }
+
+    rotate(deg: DegEnum, board: IBoard): void {
+       
+        this.degree = deg;
+        let newForm: number[][] = [];
+    
+        if (deg === DegEnum.ONE) {
+
+            newForm = [
+                [this.figureForm[1][0], this.figureForm[1][1]],
+                [this.figureForm[1][0], this.figureForm[1][1] + 1],
+                [this.figureForm[1][0], this.figureForm[1][1] + 2],
+                [this.figureForm[1][0], this.figureForm[1][1] + 3] 
+            ];
+            console.log(newForm);
+            
+            
+            const isValid = newForm.every(([x, y]) => {
+                return x >= 0 && x < 9 && y >= 0 && y < 19 && board.getCell([x, y])?.isEmpty;
+            });
+        
+            if (!isValid) {
+                console.warn("Rotation not possible, position out of bounds or blocked.");
+                return;
+            }
+
+            this.figureForm = newForm;
+            this.downCells = [[this.figureForm[3][0], this.figureForm[3][1]]];
+            this.rightCells = newForm;
+            this.leftCells = newForm;
+            console.log(this.downCells);
+
+
+
+        } else if (deg === 0) {
+            // Rotate back to horizontal
+            newForm = [
+                [this.figureForm[1][0] - 1, this.figureForm[1][1]], // Move left
+                this.figureForm[1],  // Keep the second block as the pivot
+                [this.figureForm[1][0] + 1, this.figureForm[1][1]], // Move right
+                [this.figureForm[1][0] + 2, this.figureForm[1][1]]  // Move right
+            ];
+        }
+    
+        this.setFigurePositionOnBoard(board);
+    }
+}
+
+class Figura_O extends Figura implements IFigures {
+    readonly color: ColorsEnum = ColorsEnum.PURPLE
+
+    constructor(){
+        super()
+        this.name = 'O';
+        this.degree = DegEnum.DEFAULT;
         this.figureForm = [
             [4,0],[5,0],
             [4,1],[5,1]
@@ -175,145 +283,15 @@ class Figura_O implements IFigures {
         this.leftCells = [[4,0], [4,1]];
     }
 
-    about(): string {
-        return 'figure O'
-    }
-
-    moved(direction: string | null, board: IBoard){
-        this.figureForm.forEach((item) => {
-            const cell = board.getCell(item)
-            cell?.changeColor(ColorsEnum.DEFAULT);
-            cell?.changeEmpty(true)
-        })
-        
-        if(direction === 'right'){
-            this.downCells.forEach((item) => item[0]+=1);
-            this.rightCells.forEach((item) => item[0]+=1);
-            this.leftCells.forEach((item) => item[0]+=1);
-            this.figureForm.forEach((item) => {
-                item[0]+=1
-                const cell = board.getCell(item)
-                cell?.changeColor(this.color);
-                cell?.changeEmpty(false)
-            });
-        } else if(direction === 'left'){
-            this.downCells.forEach((item) => item[0]-=1)
-            this.rightCells.forEach((item) => item[0]-=1)
-            this.leftCells.forEach((item) => item[0]-=1)
-            this.figureForm.forEach((item) => {
-                item[0]-=1
-                const cell = board.getCell(item)
-                cell?.changeColor(this.color);
-                cell?.changeEmpty(false)
-            });
-        } else {
-            this.downCells.forEach((item) => item[1]+=1)
-            this.rightCells.forEach((item) => item[1]+=1)
-            this.leftCells.forEach((item) => item[1]+=1)
-            this.figureForm.forEach((item) => {
-                item[1]+=1;
-                const cell = board.getCell(item)
-                cell?.changeColor(this.color);
-                cell?.changeEmpty(false)
-            })
-            
-        }
-    }
-
-    move(board: IBoard){
-
-        if(this.nextTickMoveDerection){
-            if(this.nextTickMoveDerection === "right"){
-                let isCanMove: boolean = false
-                let isFind: boolean = false
-
-                this.rightCells.forEach(([x, y]) => {
-                    if(!isFind){
-                        if(x < 9) {
-                            isCanMove = true;
-                        } else{
-                            isCanMove = false;
-                            isFind = true
-                        }
-                    }
-                })
-                if(isCanMove){
-                    let isFind: boolean = false
-                    this.rightCells.forEach(([x, y]) => {
-                        if(!isFind){
-                            if(board.getCell([x + 1, y])?.isEmpty){
-                                isCanMove = true;
-                            } else {
-                                isCanMove = false;
-                                isFind = true;
-                            }
-                        }
-
-                    })
-                } 
-
-                if(isCanMove){
-                    this.moved(this.nextTickMoveDerection, board);
-                }
-            } else if (this.nextTickMoveDerection === "left"){
-                let isCanMove: boolean = false
-                let isFind: boolean = false
-
-                this.leftCells.forEach(([x, y]) => {
-                    if(!isFind){
-                        if(x > 0) {
-                            isCanMove = true;
-                        } else{
-                            isCanMove = false;
-                            isFind = true
-                        }
-                    }
-                })
-                if(isCanMove){
-                    let isFind: boolean = false
-                    this.leftCells.forEach(([x, y]) => {
-                        if(!isFind){
-                            if(board.getCell([x - 1, y])?.isEmpty){
-                                isCanMove = true;
-                            } else {
-                                isCanMove = false;
-                                isFind = true;
-                            }
-                        }
-                    })
-                }
-                if(isCanMove){
-                    this.moved(this.nextTickMoveDerection, board);
-                }
-            }
-            this.nextTickMoveDerection = null;
-        } else {
-            this.moved(this.nextTickMoveDerection, board);
-        }
-    }
-
-    canMoveDown(board: IBoard){
-        const finishToBoard = this.downCells.some((item) => item[1] > 18 || board.cells[item[1]+1][item[0]].isEmpty === false)
-        return !finishToBoard 
-    }
-
-    moveRight(){
-        this.nextTickMoveDerection = 'right'
-    }
-    moveLeft(){
-        this.nextTickMoveDerection = 'left'
-    }
 }
 
-class Figura_T implements IFigures {
+class Figura_T extends Figura implements IFigures {
     readonly color: ColorsEnum = ColorsEnum.YELLOW
-    figureForm :number[][];
-    downCells: number[][];
-    rightCells: number[][];
-    leftCells: number[][];
-    nextTickMoveDerection: string | null = null;
 
     constructor(){
+        super();
+        this.name = 'T';
+        this.degree = DegEnum.DEFAULT;
         this.figureForm = [ 
             [4,0],
             [4,1],[5,1],
@@ -323,146 +301,15 @@ class Figura_T implements IFigures {
         this.rightCells = [[4,0], [4,2], [5,1]];
         this.leftCells = [[4,0], [4,1], [4,2]];
     }
-
-    about(): string {
-        return 'figure T'
-    }
-
-    moved(direction: string | null, board: IBoard){
-        this.figureForm.forEach((item) => {
-            const cell = board.getCell(item)
-            cell?.changeColor(ColorsEnum.DEFAULT);
-            cell?.changeEmpty(true)
-        })
-        
-        if(direction === 'right'){
-            this.downCells.forEach((item) => item[0]+=1);
-            this.rightCells.forEach((item) => item[0]+=1);
-            this.leftCells.forEach((item) => item[0]+=1);
-            this.figureForm.forEach((item) => {
-                item[0]+=1
-                const cell = board.getCell(item)
-                cell?.changeColor(this.color);
-                cell?.changeEmpty(false)
-            });
-        } else if(direction === 'left'){
-            this.downCells.forEach((item) => item[0]-=1)
-            this.rightCells.forEach((item) => item[0]-=1)
-            this.leftCells.forEach((item) => item[0]-=1)
-            this.figureForm.forEach((item) => {
-                item[0]-=1
-                const cell = board.getCell(item)
-                cell?.changeColor(this.color);
-                cell?.changeEmpty(false)
-            });
-        } else {
-            this.downCells.forEach((item) => item[1]+=1)
-            this.rightCells.forEach((item) => item[1]+=1)
-            this.leftCells.forEach((item) => item[1]+=1)
-            this.figureForm.forEach((item) => {
-                item[1]+=1;
-                const cell = board.getCell(item)
-                cell?.changeColor(this.color);
-                cell?.changeEmpty(false)
-            })
-            
-        }
-    }
-
-    move(board: IBoard){
-
-        if(this.nextTickMoveDerection){
-            if(this.nextTickMoveDerection === "right"){
-                let isCanMove: boolean = false
-                let isFind: boolean = false
-
-                this.rightCells.forEach(([x, y]) => {
-                    if(!isFind){
-                        if(x < 9) {
-                            isCanMove = true;
-                        } else{
-                            isCanMove = false;
-                            isFind = true
-                        }
-                    }
-                })
-                if(isCanMove){
-                    let isFind: boolean = false
-                    this.rightCells.forEach(([x, y]) => {
-                        if(!isFind){
-                            if(board.getCell([x + 1, y])?.isEmpty){
-                                isCanMove = true;
-                            } else {
-                                isCanMove = false;
-                                isFind = true;
-                            }
-                        }
-
-                    })
-                } 
-
-                if(isCanMove){
-                    this.moved(this.nextTickMoveDerection, board);
-                }
-            } else if (this.nextTickMoveDerection === "left"){
-                let isCanMove: boolean = false
-                let isFind: boolean = false
-
-                this.leftCells.forEach(([x, y]) => {
-                    if(!isFind){
-                        if(x > 0) {
-                            isCanMove = true;
-                        } else{
-                            isCanMove = false;
-                            isFind = true
-                        }
-                    }
-                })
-                if(isCanMove){
-                    let isFind: boolean = false
-                    this.leftCells.forEach(([x, y]) => {
-                        if(!isFind){
-                            if(board.getCell([x - 1, y])?.isEmpty){
-                                isCanMove = true;
-                            } else {
-                                isCanMove = false;
-                                isFind = true;
-                            }
-                        }
-                    })
-                }
-                if(isCanMove){
-                    this.moved(this.nextTickMoveDerection, board);
-                }
-            }
-            this.nextTickMoveDerection = null;
-        } else {
-            this.moved(this.nextTickMoveDerection, board);
-        }
-    }
-
-    canMoveDown(board: IBoard){
-        const finishToBoard = this.downCells.some((item) => item[1] > 18 || board.cells[item[1]+1][item[0]].isEmpty === false)
-        return !finishToBoard 
-    }
-
-    moveRight(){
-        this.nextTickMoveDerection = 'right'
-    }
-    moveLeft(){
-        this.nextTickMoveDerection = 'left'
-    }
 }
 
-class Figura_L implements IFigures {
+class Figura_L extends Figura implements IFigures {
     readonly color: ColorsEnum = ColorsEnum.RED
-    figureForm :number[][];
-    downCells: number[][];
-    rightCells: number[][];
-    leftCells: number[][];
-    nextTickMoveDerection: string | null = null;
 
     constructor(){
+        super();
+        this.name = 'L';
+        this.degree = DegEnum.DEFAULT;
         this.figureForm = [
             [4,0], [5,0], 
                    [5,1],
@@ -472,146 +319,15 @@ class Figura_L implements IFigures {
         this.rightCells = [[5,0], [5,1], [5,2]];
         this.leftCells = [[4,0], [5,1], [5,2]];
     }
-
-    about(): string {
-        return 'figure L'
-    }
-
-    moved(direction: string | null, board: IBoard){
-        this.figureForm.forEach((item) => {
-            const cell = board.getCell(item)
-            cell?.changeColor(ColorsEnum.DEFAULT);
-            cell?.changeEmpty(true)
-        })
-        
-        if(direction === 'right'){
-            this.downCells.forEach((item) => item[0]+=1);
-            this.rightCells.forEach((item) => item[0]+=1);
-            this.leftCells.forEach((item) => item[0]+=1);
-            this.figureForm.forEach((item) => {
-                item[0]+=1
-                const cell = board.getCell(item)
-                cell?.changeColor(this.color);
-                cell?.changeEmpty(false)
-            });
-        } else if(direction === 'left'){
-            this.downCells.forEach((item) => item[0]-=1)
-            this.rightCells.forEach((item) => item[0]-=1)
-            this.leftCells.forEach((item) => item[0]-=1)
-            this.figureForm.forEach((item) => {
-                item[0]-=1
-                const cell = board.getCell(item)
-                cell?.changeColor(this.color);
-                cell?.changeEmpty(false)
-            });
-        } else {
-            this.downCells.forEach((item) => item[1]+=1)
-            this.rightCells.forEach((item) => item[1]+=1)
-            this.leftCells.forEach((item) => item[1]+=1)
-            this.figureForm.forEach((item) => {
-                item[1]+=1;
-                const cell = board.getCell(item)
-                cell?.changeColor(this.color);
-                cell?.changeEmpty(false)
-            })
-            
-        }
-    }
-
-    move(board: IBoard){
-
-        if(this.nextTickMoveDerection){
-            if(this.nextTickMoveDerection === "right"){
-                let isCanMove: boolean = false
-                let isFind: boolean = false
-
-                this.rightCells.forEach(([x, y]) => {
-                    if(!isFind){
-                        if(x < 9) {
-                            isCanMove = true;
-                        } else{
-                            isCanMove = false;
-                            isFind = true
-                        }
-                    }
-                })
-                if(isCanMove){
-                    let isFind: boolean = false
-                    this.rightCells.forEach(([x, y]) => {
-                        if(!isFind){
-                            if(board.getCell([x + 1, y])?.isEmpty){
-                                isCanMove = true;
-                            } else {
-                                isCanMove = false;
-                                isFind = true;
-                            }
-                        }
-
-                    })
-                } 
-
-                if(isCanMove){
-                    this.moved(this.nextTickMoveDerection, board);
-                }
-            } else if (this.nextTickMoveDerection === "left"){
-                let isCanMove: boolean = false
-                let isFind: boolean = false
-
-                this.leftCells.forEach(([x, y]) => {
-                    if(!isFind){
-                        if(x > 0) {
-                            isCanMove = true;
-                        } else{
-                            isCanMove = false;
-                            isFind = true
-                        }
-                    }
-                })
-                if(isCanMove){
-                    let isFind: boolean = false
-                    this.leftCells.forEach(([x, y]) => {
-                        if(!isFind){
-                            if(board.getCell([x - 1, y])?.isEmpty){
-                                isCanMove = true;
-                            } else {
-                                isCanMove = false;
-                                isFind = true;
-                            }
-                        }
-                    })
-                }
-                if(isCanMove){
-                    this.moved(this.nextTickMoveDerection, board);
-                }
-            }
-            this.nextTickMoveDerection = null;
-        } else {
-            this.moved(this.nextTickMoveDerection, board);
-        }
-    }
-
-    canMoveDown(board: IBoard){
-        const finishToBoard = this.downCells.some((item) => item[1] > 18 || board.cells[item[1]+1][item[0]].isEmpty === false)
-        return !finishToBoard 
-    }
-
-    moveRight(){
-        this.nextTickMoveDerection = 'right'
-    }
-    moveLeft(){
-        this.nextTickMoveDerection = 'left'
-    }
 }
 
-class Figura_J implements IFigures {
+class Figura_J extends Figura implements IFigures {
     readonly color: ColorsEnum = ColorsEnum.ORANGE
-    figureForm :number[][];
-    downCells: number[][];
-    rightCells: number[][];
-    leftCells: number[][];
-    nextTickMoveDerection: string | null = null;
 
     constructor(){
+        super();
+        this.name = 'J';
+        this.degree = DegEnum.DEFAULT;
         this.figureForm = [
             [4,0], [5,0], 
             [4,1], 
@@ -621,146 +337,15 @@ class Figura_J implements IFigures {
         this.rightCells = [[5,0], [4,1], [4,2]];
         this.leftCells = [[4,0], [4,1], [4,2]];
     }
-
-    about(): string {
-        return 'figure J'
-    }
-
-    moved(direction: string | null, board: IBoard){
-        this.figureForm.forEach((item) => {
-            const cell = board.getCell(item)
-            cell?.changeColor(ColorsEnum.DEFAULT);
-            cell?.changeEmpty(true)
-        })
-        
-        if(direction === 'right'){
-            this.downCells.forEach((item) => item[0]+=1);
-            this.rightCells.forEach((item) => item[0]+=1);
-            this.leftCells.forEach((item) => item[0]+=1);
-            this.figureForm.forEach((item) => {
-                item[0]+=1
-                const cell = board.getCell(item)
-                cell?.changeColor(this.color);
-                cell?.changeEmpty(false)
-            });
-        } else if(direction === 'left'){
-            this.downCells.forEach((item) => item[0]-=1)
-            this.rightCells.forEach((item) => item[0]-=1)
-            this.leftCells.forEach((item) => item[0]-=1)
-            this.figureForm.forEach((item) => {
-                item[0]-=1
-                const cell = board.getCell(item)
-                cell?.changeColor(this.color);
-                cell?.changeEmpty(false)
-            });
-        } else {
-            this.downCells.forEach((item) => item[1]+=1)
-            this.rightCells.forEach((item) => item[1]+=1)
-            this.leftCells.forEach((item) => item[1]+=1)
-            this.figureForm.forEach((item) => {
-                item[1]+=1;
-                const cell = board.getCell(item)
-                cell?.changeColor(this.color);
-                cell?.changeEmpty(false)
-            })
-            
-        }
-    }
-
-    move(board: IBoard){
-
-        if(this.nextTickMoveDerection){
-            if(this.nextTickMoveDerection === "right"){
-                let isCanMove: boolean = false
-                let isFind: boolean = false
-
-                this.rightCells.forEach(([x, y]) => {
-                    if(!isFind){
-                        if(x < 9) {
-                            isCanMove = true;
-                        } else{
-                            isCanMove = false;
-                            isFind = true
-                        }
-                    }
-                })
-                if(isCanMove){
-                    let isFind: boolean = false
-                    this.rightCells.forEach(([x, y]) => {
-                        if(!isFind){
-                            if(board.getCell([x + 1, y])?.isEmpty){
-                                isCanMove = true;
-                            } else {
-                                isCanMove = false;
-                                isFind = true;
-                            }
-                        }
-
-                    })
-                } 
-
-                if(isCanMove){
-                    this.moved(this.nextTickMoveDerection, board);
-                }
-            } else if (this.nextTickMoveDerection === "left"){
-                let isCanMove: boolean = false
-                let isFind: boolean = false
-
-                this.leftCells.forEach(([x, y]) => {
-                    if(!isFind){
-                        if(x > 0) {
-                            isCanMove = true;
-                        } else{
-                            isCanMove = false;
-                            isFind = true
-                        }
-                    }
-                })
-                if(isCanMove){
-                    let isFind: boolean = false
-                    this.leftCells.forEach(([x, y]) => {
-                        if(!isFind){
-                            if(board.getCell([x - 1, y])?.isEmpty){
-                                isCanMove = true;
-                            } else {
-                                isCanMove = false;
-                                isFind = true;
-                            }
-                        }
-                    })
-                }
-                if(isCanMove){
-                    this.moved(this.nextTickMoveDerection, board);
-                }
-            }
-            this.nextTickMoveDerection = null;
-        } else {
-            this.moved(this.nextTickMoveDerection, board);
-        }
-    }
-
-    canMoveDown(board: IBoard){
-        const finishToBoard = this.downCells.some((item) => item[1] > 18 || board.cells[item[1]+1][item[0]].isEmpty === false)
-        return !finishToBoard 
-    }
-
-    moveRight(){
-        this.nextTickMoveDerection = 'right'
-    }
-    moveLeft(){
-        this.nextTickMoveDerection = 'left'
-    }
 }
 
-class Figura_Z implements IFigures {
+class Figura_Z extends Figura implements IFigures {
     readonly color: ColorsEnum = ColorsEnum.BLUE
-    figureForm :number[][];
-    downCells: number[][];
-    rightCells: number[][];
-    leftCells: number[][];
-    nextTickMoveDerection: string | null = null;
 
     constructor(){
+        super();
+        this.name = 'Z';
+        this.degree = DegEnum.DEFAULT;
         this.figureForm = [
                    [5,0],
             [4,1], [5,1], 
@@ -770,147 +355,15 @@ class Figura_Z implements IFigures {
         this.rightCells = [[5,0], [5,1], [4,2]];
         this.leftCells = [[5,0], [4,1], [4,2]];
     }
-
-    about(): string {
-        return 'figure Z'
-    }
-
-    moved(direction: string | null, board: IBoard){
-        this.figureForm.forEach((item) => {
-            const cell = board.getCell(item)
-            cell?.changeColor(ColorsEnum.DEFAULT);
-            cell?.changeEmpty(true)
-        })
-        
-        if(direction === 'right'){
-            this.downCells.forEach((item) => item[0]+=1);
-            this.rightCells.forEach((item) => item[0]+=1);
-            this.leftCells.forEach((item) => item[0]+=1);
-            this.figureForm.forEach((item) => {
-                item[0]+=1
-                const cell = board.getCell(item)
-                cell?.changeColor(this.color);
-                cell?.changeEmpty(false)
-            });
-        } else if(direction === 'left'){
-            this.downCells.forEach((item) => item[0]-=1)
-            this.rightCells.forEach((item) => item[0]-=1)
-            this.leftCells.forEach((item) => item[0]-=1)
-            this.figureForm.forEach((item) => {
-                item[0]-=1
-                const cell = board.getCell(item)
-                cell?.changeColor(this.color);
-                cell?.changeEmpty(false)
-            });
-        } else {
-            this.downCells.forEach((item) => item[1]+=1)
-            this.rightCells.forEach((item) => item[1]+=1)
-            this.leftCells.forEach((item) => item[1]+=1)
-            this.figureForm.forEach((item) => {
-                item[1]+=1;
-                const cell = board.getCell(item)
-                cell?.changeColor(this.color);
-                cell?.changeEmpty(false)
-            })
-            
-        }
-    }
-
-    move(board: IBoard){
-
-        if(this.nextTickMoveDerection){
-            if(this.nextTickMoveDerection === "right"){
-                let isCanMove: boolean = false
-                let isFind: boolean = false
-
-                this.rightCells.forEach(([x, y]) => {
-                    if(!isFind){
-                        if(x < 9) {
-                            isCanMove = true;
-                        } else{
-                            isCanMove = false;
-                            isFind = true
-                        }
-                    }
-                })
-                if(isCanMove){
-                    let isFind: boolean = false
-                    this.rightCells.forEach(([x, y]) => {
-                        if(!isFind){
-                            if(board.getCell([x + 1, y])?.isEmpty){
-                                isCanMove = true;
-                            } else {
-                                isCanMove = false;
-                                isFind = true;
-                            }
-                        }
-
-                    })
-                } 
-
-                if(isCanMove){
-                    this.moved(this.nextTickMoveDerection, board);
-                }
-            } else if (this.nextTickMoveDerection === "left"){
-                let isCanMove: boolean = false
-                let isFind: boolean = false
-
-                this.leftCells.forEach(([x, y]) => {
-                    if(!isFind){
-                        if(x > 0) {
-                            isCanMove = true;
-                        } else{
-                            isCanMove = false;
-                            isFind = true
-                        }
-                    }
-                })
-                if(isCanMove){
-                    let isFind: boolean = false
-                    this.leftCells.forEach(([x, y]) => {
-                        if(!isFind){
-                            if(board.getCell([x - 1, y])?.isEmpty){
-                                isCanMove = true;
-                            } else {
-                                isCanMove = false;
-                                isFind = true;
-                            }
-                        }
-                    })
-                }
-                if(isCanMove){
-                    this.moved(this.nextTickMoveDerection, board);
-                }
-            }
-            this.nextTickMoveDerection = null;
-        } else {
-            this.moved(this.nextTickMoveDerection, board);
-        }
-    }
-
-    canMoveDown(board: IBoard){
-        const finishToBoard = this.downCells.some((item) => item[1] > 18 || board.cells[item[1]+1][item[0]].isEmpty === false)
-        return !finishToBoard 
-    }
-
-    moveRight(){
-        this.nextTickMoveDerection = 'right'
-    }
-
-    moveLeft(){
-        this.nextTickMoveDerection = 'left'
-    }
 }
 
-class Figura_S implements IFigures {
+class Figura_S extends Figura implements IFigures {
     readonly color: ColorsEnum = ColorsEnum.GREY
-    figureForm :number[][];
-    downCells: number[][];
-    rightCells: number[][];
-    leftCells: number[][];
-    nextTickMoveDerection: string | null = null;
 
     constructor(){
+        super();
+        this.name = 'S';
+        this.degree = DegEnum.DEFAULT;
         this.figureForm = [
             [4,0],
             [4,1],[5,1],
@@ -920,281 +373,19 @@ class Figura_S implements IFigures {
         this.rightCells = [[4,0], [5,1], [5,2]];
         this.leftCells = [[4,0], [4,1], [5,2]];
     }
-
-    about(): string {
-        return 'figure S'
-    }
-
-    moved(direction: string | null, board: IBoard){
-        this.figureForm.forEach((item) => {
-            const cell = board.getCell(item)
-            cell?.changeColor(ColorsEnum.DEFAULT);
-            cell?.changeEmpty(true)
-        })
-        
-        if(direction === 'right'){
-            this.downCells.forEach((item) => item[0]+=1);
-            this.rightCells.forEach((item) => item[0]+=1);
-            this.leftCells.forEach((item) => item[0]+=1);
-            this.figureForm.forEach((item) => {
-                item[0]+=1
-                const cell = board.getCell(item)
-                cell?.changeColor(this.color);
-                cell?.changeEmpty(false)
-            });
-        } else if(direction === 'left'){
-            this.downCells.forEach((item) => item[0]-=1)
-            this.rightCells.forEach((item) => item[0]-=1)
-            this.leftCells.forEach((item) => item[0]-=1)
-            this.figureForm.forEach((item) => {
-                item[0]-=1
-                const cell = board.getCell(item)
-                cell?.changeColor(this.color);
-                cell?.changeEmpty(false)
-            });
-        } else {
-            this.downCells.forEach((item) => item[1]+=1)
-            this.rightCells.forEach((item) => item[1]+=1)
-            this.leftCells.forEach((item) => item[1]+=1)
-            this.figureForm.forEach((item) => {
-                item[1]+=1;
-                const cell = board.getCell(item)
-                cell?.changeColor(this.color);
-                cell?.changeEmpty(false)
-            })
-            
-        }
-    }
-
-    move(board: IBoard){
-
-        if(this.nextTickMoveDerection){
-            if(this.nextTickMoveDerection === "right"){
-                let isCanMove: boolean = false
-                let isFind: boolean = false
-
-                this.rightCells.forEach(([x, y]) => {
-                    if(!isFind){
-                        if(x < 9) {
-                            isCanMove = true;
-                        } else{
-                            isCanMove = false;
-                            isFind = true
-                        }
-                    }
-                })
-                if(isCanMove){
-                    let isFind: boolean = false
-                    this.rightCells.forEach(([x, y]) => {
-                        if(!isFind){
-                            if(board.getCell([x + 1, y])?.isEmpty){
-                                isCanMove = true;
-                            } else {
-                                isCanMove = false;
-                                isFind = true;
-                            }
-                        }
-
-                    })
-                } 
-
-                if(isCanMove){
-                    this.moved(this.nextTickMoveDerection, board);
-                }
-            } else if (this.nextTickMoveDerection === "left"){
-                let isCanMove: boolean = false
-                let isFind: boolean = false
-
-                this.leftCells.forEach(([x, y]) => {
-                    if(!isFind){
-                        if(x > 0) {
-                            isCanMove = true;
-                        } else{
-                            isCanMove = false;
-                            isFind = true
-                        }
-                    }
-                })
-                if(isCanMove){
-                    let isFind: boolean = false
-                    this.leftCells.forEach(([x, y]) => {
-                        if(!isFind){
-                            if(board.getCell([x - 1, y])?.isEmpty){
-                                isCanMove = true;
-                            } else {
-                                isCanMove = false;
-                                isFind = true;
-                            }
-                        }
-                    })
-                }
-                if(isCanMove){
-                    this.moved(this.nextTickMoveDerection, board);
-                }
-            }
-            this.nextTickMoveDerection = null;
-        } else {
-            this.moved(this.nextTickMoveDerection, board);
-        }
-    }
-
-    canMoveDown(board: IBoard){
-        const finishToBoard = this.downCells.some((item) => item[1] > 18 || board.cells[item[1]+1][item[0]].isEmpty === false)
-        return !finishToBoard 
-    }
-
-    moveRight(){
-        this.nextTickMoveDerection = 'right'
-    }
-
-    moveLeft(){
-        this.nextTickMoveDerection = 'left'
-    }
 }
 
-class Figura_D implements IFigures {
+class Figura_D extends Figura implements IFigures {
     readonly color: ColorsEnum = ColorsEnum.VIOLET
-    figureForm :number[][];
-    downCells: number[][];
-    rightCells: number[][];
-    leftCells: number[][];
-    nextTickMoveDerection: string | null = null;
 
     constructor(){
+        super();
+        this.name = 'D';
+        this.degree = DegEnum.DEFAULT;
         this.figureForm = [[4,0]];
         this.downCells = [[4,0]];
         this.rightCells = [[4,0]];
         this.leftCells = [[4,0]];
-    }
-
-    about(): string {
-        return 'figure D'
-    }
-
-    moved(direction: string | null, board: IBoard){
-        this.figureForm.forEach((item) => {
-            const cell = board.getCell(item)
-            cell?.changeColor(ColorsEnum.DEFAULT);
-            cell?.changeEmpty(true)
-        })
-        
-        if(direction === 'right'){
-            this.downCells.forEach((item) => item[0]+=1);
-            this.rightCells.forEach((item) => item[0]+=1);
-            this.leftCells.forEach((item) => item[0]+=1);
-            this.figureForm.forEach((item) => {
-                item[0]+=1
-                const cell = board.getCell(item)
-                cell?.changeColor(this.color);
-                cell?.changeEmpty(false)
-            });
-        } else if(direction === 'left'){
-            this.downCells.forEach((item) => item[0]-=1)
-            this.rightCells.forEach((item) => item[0]-=1)
-            this.leftCells.forEach((item) => item[0]-=1)
-            this.figureForm.forEach((item) => {
-                item[0]-=1
-                const cell = board.getCell(item)
-                cell?.changeColor(this.color);
-                cell?.changeEmpty(false)
-            });
-        } else {
-            this.downCells.forEach((item) => item[1]+=1)
-            this.rightCells.forEach((item) => item[1]+=1)
-            this.leftCells.forEach((item) => item[1]+=1)
-            this.figureForm.forEach((item) => {
-                item[1]+=1;
-                const cell = board.getCell(item)
-                cell?.changeColor(this.color);
-                cell?.changeEmpty(false)
-            })
-            
-        }
-    }
-
-    move(board: IBoard){
-
-        if(this.nextTickMoveDerection){
-            if(this.nextTickMoveDerection === "right"){
-                let isCanMove: boolean = false
-                let isFind: boolean = false
-
-                this.rightCells.forEach(([x, y]) => {
-                    if(!isFind){
-                        if(x < 9) {
-                            isCanMove = true;
-                        } else{
-                            isCanMove = false;
-                            isFind = true
-                        }
-                    }
-                })
-                if(isCanMove){
-                    let isFind: boolean = false
-                    this.rightCells.forEach(([x, y]) => {
-                        if(!isFind){
-                            if(board.getCell([x + 1, y])?.isEmpty){
-                                isCanMove = true;
-                            } else {
-                                isCanMove = false;
-                                isFind = true;
-                            }
-                        }
-
-                    })
-                } 
-
-                if(isCanMove){
-                    this.moved(this.nextTickMoveDerection, board);
-                }
-            } else if (this.nextTickMoveDerection === "left"){
-                let isCanMove: boolean = false
-                let isFind: boolean = false
-
-                this.leftCells.forEach(([x, y]) => {
-                    if(!isFind){
-                        if(x > 0) {
-                            isCanMove = true;
-                        } else{
-                            isCanMove = false;
-                            isFind = true
-                        }
-                    }
-                })
-                if(isCanMove){
-                    let isFind: boolean = false
-                    this.leftCells.forEach(([x, y]) => {
-                        if(!isFind){
-                            if(board.getCell([x - 1, y])?.isEmpty){
-                                isCanMove = true;
-                            } else {
-                                isCanMove = false;
-                                isFind = true;
-                            }
-                        }
-                    })
-                }
-                if(isCanMove){
-                    this.moved(this.nextTickMoveDerection, board);
-                }
-            }
-            this.nextTickMoveDerection = null;
-        } else {
-            this.moved(this.nextTickMoveDerection, board);
-        }
-    }
-
-    canMoveDown(board: IBoard){
-        const finishToBoard = this.downCells.some((item) => item[1] > 18 || board.cells[item[1]+1][item[0]].isEmpty === false)
-        return !finishToBoard 
-    }
-
-    moveRight(){
-        this.nextTickMoveDerection = 'right'
-    }
-
-    moveLeft(){
-        this.nextTickMoveDerection = 'left'
     }
 }
 
@@ -1212,15 +403,3 @@ export default class FigureFactory {
         throw new Error(`${figureName}: Unknown Figure`)
     }
 }
-
-
-
-
- /* let isCanMove: boolean = false
-                
-    this.rightCells.forEach(([x,y]) =>  x < 8 ? isCanMove = true : false)
-    if(isCanMove){
-        this.rightCells.forEach(([x,y]) =>  {
-            board.getCell([x+1, y])?.isEmpty ? isCanMove = true : false
-        })
-    } */

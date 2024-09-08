@@ -1,34 +1,30 @@
 <script setup lang="ts">
-    import { ref, onBeforeMount, computed, watch } from "vue";
+    import { ref, onUnmounted, onMounted } from "vue";
     import Board from "../composables/Board"
     import FigureFactory from "../composables/Figures"
 
+    import {DegEnum, type IBoard, type IFigures} from "../composables/types"
 
+    const controller = new AbortController();
+    const signal = controller.signal;
 
+    onUnmounted(()=> {
+        controller.abort()
+        Stop();
+        clearTimeout(GameCircle)
+    });
+    onMounted(() => Start());
 
-    import { ColorsEnum } from "../composables/types";
-
-    import type {IBoard, IFigures} from "../composables/types"
-
-
-    const restart = () => {
-        const tetrisBoard = new Board();
-        tetrisBoard.initCells();
-        return tetrisBoard
-    }
-
+    const speedGame = ref(500);
     const board = ref<IBoard>(new Board());
-    board.value.initCells()
+    board.value.initCells();
+    const isGameStarted = ref(false);
     
    
     const initialNewFigure = (type: string) => {
         const figure = FigureFactory.createFigure(type)
-        figure.figureForm.forEach((item: number[]) => {
-            const cell = board.value.getCell(item)
-            cell?.changeColor(figure.color);
-            cell?.changeEmpty(false)
-        })
-        return figure
+        board.value.setFigure(figure);
+        return figure;
     }
 
     const getRandomInt = (min: number, max: number) => {
@@ -44,73 +40,76 @@
         return allFigures[random]
     }
 
-    const currentFigure = ref<IFigures>(initialNewFigure(randomFigure()))
+    let currentFigure:IFigures = initialNewFigure(randomFigure())
 
     const moveFigure = () => {
-        const canFIgureMoveDown = currentFigure.value.canMoveDown(board.value)
-
-        if(canFIgureMoveDown){
-            currentFigure.value.move(board.value)
+    
+        if(currentFigure.canMoveDown(board.value)){
+            currentFigure.chackMoveDerection(board.value)
         } else {
-            if(board.value.cells[0][4].isEmpty === false || board.value.cells[0][5].isEmpty === false){
-               return /* board.value = restart() */ StartStopGame(false)
+            if(board.value.isGameOver()){
+                Stop()
+            }else{
+                currentFigure = initialNewFigure(randomFigure())
             }
-            return currentFigure.value = initialNewFigure(randomFigure())
         }
-        
     }
 
     let GameCircle: number | null = null
 
-    const StartStopGame = (start: boolean) => {
+    const StartStopGame = () => {
+        if(isGameStarted.value){
+            GameCircle = setTimeout(()=>{
 
-            if(GameCircle !== null) clearTimeout(GameCircle)
-            if(start){
-                GameCircle = setTimeout(()=>{
+                moveFigure()
+                clearTimeout(GameCircle)
+                StartStopGame()
 
-                    moveFigure()
-                    clearTimeout(GameCircle)
-                    StartStopGame(true)
-
-                },500)
-            }
-        
+            }, speedGame.value)
+        } else clearTimeout(GameCircle)
     }
-    const isGameStarted = ref(true)
-    StartStopGame(true)
+
+    const Start = () => {
+        isGameStarted.value = true;
+        StartStopGame()
+    }
+
+    const Stop = () => {
+        isGameStarted.value = false;
+    }
 
     const Pause = () => {
         if(isGameStarted.value){
-            StartStopGame(false);
-            isGameStarted.value = false;
+            Stop()
         } else {
-            StartStopGame(true);
             isGameStarted.value  = true;
+            StartStopGame();
         }
     }
 
     const Restart = () => {
+        Stop();
+        clearTimeout(GameCircle);
         board.value = new Board();
         board.value.initCells();
-        currentFigure.value = initialNewFigure(randomFigure()); 
-        StartStopGame(true);
-        isGameStarted.value = true;
+        currentFigure = initialNewFigure(randomFigure()); 
+        Start()
     }
 
+    // =======> Events <========
 
     document.addEventListener('keydown', (e) => {
-        e.preventDefault()
-        if(e.key === "ArrowLeft"){
-            return currentFigure.value.moveLeft()
-        }
-    })
+        e.preventDefault();
+        if (e.key === "ArrowLeft") return currentFigure.moveLeft();
+        if (e.key === "ArrowRight") return currentFigure.moveRight();
+        if (e.key === "ArrowDown") return speedGame.value = 100;  
+        if (e.code === "Space") return Pause();
+    }, {signal});
 
-    document.addEventListener('keydown', (e) => {
+    document.addEventListener('keyup', (e) => {
         e.preventDefault()
-        if(e.key === "ArrowRight"){
-            return currentFigure.value.moveRight()
-        }
-    })
+        if(e.key === "ArrowDown") return speedGame.value = 500;
+    }, {signal});
 
 </script>
 <template>
@@ -118,8 +117,8 @@
         <div class="w-[30%] flex justify-center gap-4">
             <button @click="currentFigure.moveLeft()" class="border-2 p-4 rounded-md">Left</button>
             <button @click="currentFigure.moveRight()" class="border-2 p-4 rounded-md">Right</button>
-            <button @click="" class="border-2 p-4 rounded-md">Down</button>
-            <button @click="Pause" class="border-2 p-4 rounded-md">Pause</button>
+            <button @mousedown="speedGame = 100" @mouseup="speedGame = 500" class="border-2 p-4 rounded-md">Down</button>
+            <button @click="currentFigure.moveDeg(DegEnum.ONE)" class="border-2 p-4 rounded-md">Rotate</button>
         </div>
         <div id="tetrisBoard" >
             <div class="row" v-for="row, index in board.cells" :key="index">
@@ -127,6 +126,7 @@
             </div>
         </div>
         <div class="w-[30%] flex justify-center">
+            <button @click="Pause" class="border-2 p-4 rounded-md">Pause</button>
             <button @click="Restart" class="border-2 p-4 rounded-md">Restart</button>
         </div>
     </div>

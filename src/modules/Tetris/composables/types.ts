@@ -4,6 +4,18 @@ export interface IBoard {
     cells: ICell[][]
     initCells():void
     getCell([]): ICell | undefined
+    setFigure(figure: IFigures):void
+    isGameOver():boolean
+}
+
+type aboutFigureType = {
+    name: string
+    degree: DegEnum
+    form: number[][]
+    color: ColorsEnum
+    leftCells: number[][],
+    rightCells: number[][],
+    downCells: number[][]
 }
 
 export interface IFigures {
@@ -11,11 +23,13 @@ export interface IFigures {
     figureForm: number[][]
     downCells: number[][]
 
-    about():string
-    move(board: IBoard):void
+    about():aboutFigureType
+    chackMoveDerection(board: IBoard):void
     canMoveDown(board: IBoard): boolean
     moveRight(): void
     moveLeft(): void
+    rotate(deg: DegEnum, board: IBoard): void
+    moveDeg(deg: DegEnum): void
 }
 
 export interface ICell {
@@ -40,4 +54,11 @@ export enum ColorsEnum {
     ORANGE = 'rgb(247 132 0',
     VIOLET = 'rgb(97 105 255)',
     GREY = 'grey'
+}
+
+export enum DegEnum {
+    ONE = 90,
+    TWO = 180,
+    THREE = 270,
+    DEFAULT = 0
 }
