@@ -20,9 +20,9 @@
     board.value.initCells();
     const isGameStarted = ref(false);
     
-   
+    
     const initialNewFigure = (type: string) => {
-        const figure = FigureFactory.createFigure(type)
+        const figure: IFigures = FigureFactory.createFigure(type)
         board.value.setFigure(figure);
         return figure;
     }
@@ -30,7 +30,7 @@
     const getRandomInt = (min: number, max: number) => {
         min = Math.ceil(min);
         max = Math.floor(max);
-        return Math.floor(Math.random() * (max - min) + min); // Максимум не включается, минимум включается
+        return Math.floor(Math.random() * (max - min) + min);
     }
 
     const randomFigure = () => {
@@ -45,7 +45,7 @@
     const moveFigure = () => {
     
         if(currentFigure.canMoveDown(board.value)){
-            currentFigure.chackMoveDerection(board.value)
+            currentFigure.checkMoveDirection(board.value)
         } else {
             if(board.value.isGameOver()){
                 Stop()
@@ -55,16 +55,14 @@
         }
     }
 
-    let GameCircle: number | null = null
+    let GameCircle: number | undefined = undefined
 
     const StartStopGame = () => {
         if(isGameStarted.value){
+            clearTimeout(GameCircle)
             GameCircle = setTimeout(()=>{
-
-                moveFigure()
-                clearTimeout(GameCircle)
+               moveFigure()
                 StartStopGame()
-
             }, speedGame.value)
         } else clearTimeout(GameCircle)
     }
@@ -95,6 +93,13 @@
         currentFigure = initialNewFigure(randomFigure()); 
         Start()
     }
+    
+    const Rotate = () => {
+        const list = [DegEnum.DEFAULT, DegEnum.ONE, DegEnum.TWO, DegEnum.THREE];
+        const result = list.indexOf(currentFigure.degree)
+        const index = result === list.length-1 ? 0 : result + 1
+        return currentFigure.moveDeg(list[index])
+    }
 
     // =======> Events <========
 
@@ -118,7 +123,7 @@
             <button @click="currentFigure.moveLeft()" class="border-2 p-4 rounded-md">Left</button>
             <button @click="currentFigure.moveRight()" class="border-2 p-4 rounded-md">Right</button>
             <button @mousedown="speedGame = 100" @mouseup="speedGame = 500" class="border-2 p-4 rounded-md">Down</button>
-            <button @click="currentFigure.moveDeg(DegEnum.ONE)" class="border-2 p-4 rounded-md">Rotate</button>
+            <button @click="Rotate()" class="border-2 p-4 rounded-md">Rotate</button>
         </div>
         <div id="tetrisBoard" >
             <div class="row" v-for="row, index in board.cells" :key="index">

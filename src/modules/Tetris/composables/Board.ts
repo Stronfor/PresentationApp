@@ -1,5 +1,5 @@
 import Cell from "./Cell";
-import type { ICell, IBoard } from "./types";
+import type { ICell, IBoard, IFigures } from "./types";
 
 
 export default class Board implements IBoard {
@@ -20,7 +20,7 @@ export default class Board implements IBoard {
         return this.cells[y][x]
     }
 
-    setFigure(figure: IFigure) {
+    setFigure(figure: IFigures) {
         // Loop through each block in the figure's form and place it on the board
         for (const [x, y] of figure.figureForm) {
             const cell = this.getCell([x, y]);

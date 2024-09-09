@@ -22,13 +22,14 @@ export interface IFigures {
     color: ColorsEnum
     figureForm: number[][]
     downCells: number[][]
+    degree: DegEnum
 
     about():aboutFigureType
-    chackMoveDerection(board: IBoard):void
+    checkMoveDirection(board: IBoard):void
     canMoveDown(board: IBoard): boolean
     moveRight(): void
     moveLeft(): void
-    rotate(deg: DegEnum, board: IBoard): void
+    rotate?(deg: DegEnum, board: IBoard): void
     moveDeg(deg: DegEnum): void
 }
 
@@ -60,5 +61,5 @@ export enum DegEnum {
     ONE = 90,
     TWO = 180,
     THREE = 270,
-    DEFAULT = 0
+    DEFAULT = 360
 }

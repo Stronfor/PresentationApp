@@ -10,7 +10,7 @@ class Figura implements IFigures {
     rightCells: number[][] = [];
     leftCells: number[][] = [];
     name: string = '';
-    nextTickMoveDerection: string |  DegEnum | null = null;
+    nextTickMoveDirection: string |  DegEnum | null = null;
 
     about() {
         return {
@@ -28,8 +28,8 @@ class Figura implements IFigures {
         this.figureForm.forEach((item) => {
             const cell = board.getCell(item)
             if(cell){
-                cell?.changeColor(ColorsEnum.DEFAULT);
-                cell?.changeEmpty(true);
+                cell.changeColor(ColorsEnum.DEFAULT);
+                cell.changeEmpty(true);
             }
         })
     };
@@ -45,7 +45,6 @@ class Figura implements IFigures {
     };
 
     moving(direction: string | null | DegEnum, board: IBoard){
-        
         if(direction === 'right'){
             this.downCells.forEach((item) => item[0]+=1);
             this.rightCells.forEach((item) => item[0]+=1);
@@ -66,10 +65,9 @@ class Figura implements IFigures {
                 cell?.changeColor(this.color);
                 cell?.changeEmpty(false)
             });
-        } else if(direction === DegEnum.ONE){
+        } else if(typeof direction === 'number'){
            this.rotate(direction, board);
         } else {
-            
             this.figureForm.forEach((item) => {
                 item[1]+=1;
                 const cell = board.getCell(item)
@@ -82,9 +80,9 @@ class Figura implements IFigures {
         }
     };
 
-    chackMoveDerection(board: IBoard){
-        if(this.nextTickMoveDerection){
-            if(this.nextTickMoveDerection === "right"){
+    checkMoveDirection(board: IBoard){
+        if(this.nextTickMoveDirection){
+            if(this.nextTickMoveDirection === "right"){
                 let isCanMove: boolean = false
                 let isFind: boolean = false
 
@@ -114,9 +112,9 @@ class Figura implements IFigures {
                 } 
                 if(isCanMove){
                     this.clearFigurePositionOnBoard(board)
-                    this.moving(this.nextTickMoveDerection, board);
+                    this.moving(this.nextTickMoveDirection, board);
                 }
-            } else if (this.nextTickMoveDerection === "left"){
+            } else if (this.nextTickMoveDirection === "left"){
                 let isCanMove: boolean = false
                 let isFind: boolean = false
 
@@ -145,65 +143,34 @@ class Figura implements IFigures {
                 }
                 if(isCanMove){
                     this.clearFigurePositionOnBoard(board)
-                    this.moving(this.nextTickMoveDerection, board);
+                    this.moving(this.nextTickMoveDirection, board);
                 }
-            } else if (this.nextTickMoveDerection === DegEnum.ONE){
+            } else if (typeof this.nextTickMoveDirection === 'number'){
                 this.clearFigurePositionOnBoard(board)
-                this.moving(this.nextTickMoveDerection, board);
+                this.moving(this.nextTickMoveDirection, board);
             }
-            this.nextTickMoveDerection = null;
         } else {
             this.clearFigurePositionOnBoard(board)
             this.moving(null, board);
         }
+        this.nextTickMoveDirection = null;
     };
 
-    canMoveDown(board: IBoard){
-        let isCanMove: boolean = false
-        let isFind: boolean = false
-
-        this.downCells.forEach(([x, y]) => {
-            if(!isFind){
-                if(y < 19) {
-                    isCanMove = true;
-                } else{
-                    isCanMove = false;
-                    isFind = true
-                }
-            }
-        })
-        if(isCanMove){
-            let isFind: boolean = false
-            this.downCells.forEach(([x, y]) => {
-                if(!isFind){
-                    if(board.getCell([x, y + 1])?.isEmpty){
-                        isCanMove = true;
-                    } else {
-                        isCanMove = false;
-                        isFind = true;
-                    }
-                }
-            })
-        } 
-        if(isCanMove){
-           return true;
-        }
-        return  false;
-    };
+    canMoveDown = (board: IBoard) => this.downCells.every(([x, y]) => y < 19 && board.getCell([x, y + 1])?.isEmpty);
 
     moveRight(){
-        this.nextTickMoveDerection = 'right'
+        this.nextTickMoveDirection = 'right'
     };
 
     moveLeft(){
-        this.nextTickMoveDerection = 'left'
+        this.nextTickMoveDirection = 'left'
     };
 
     moveDeg(deg: DegEnum) {
-        this.nextTickMoveDerection = deg;
+        if(this.name !== 'O' && this.name !== 'D')
+        this.nextTickMoveDirection = deg;
     };
 
-    rotate(deg: DegEnum, board: IBoard): void {}
 
 }
 
@@ -221,40 +188,18 @@ class Figura_I extends Figura {
     }
 
     rotate(deg: DegEnum, board: IBoard): void {
-       
         this.degree = deg;
         let newForm: number[][] = [];
     
-        if (deg === DegEnum.ONE) {
-
+        if (deg === DegEnum.ONE || deg === DegEnum.THREE) {
             newForm = [
-                [this.figureForm[1][0], this.figureForm[1][1]],
-                [this.figureForm[1][0], this.figureForm[1][1] + 1],
-                [this.figureForm[1][0], this.figureForm[1][1] + 2],
-                [this.figureForm[1][0], this.figureForm[1][1] + 3] 
-            ];
-            console.log(newForm);
-            
-            
-            const isValid = newForm.every(([x, y]) => {
-                return x >= 0 && x < 9 && y >= 0 && y < 19 && board.getCell([x, y])?.isEmpty;
-            });
-        
-            if (!isValid) {
-                console.warn("Rotation not possible, position out of bounds or blocked.");
-                return;
-            }
+                [this.figureForm[1][0], this.figureForm[0][1]],
+                [this.figureForm[1][0], this.figureForm[0][1] + 1],
+                [this.figureForm[1][0], this.figureForm[0][1] + 2],
+                [this.figureForm[1][0], this.figureForm[0][1] + 3]
+            ]
 
-            this.figureForm = newForm;
-            this.downCells = [[this.figureForm[3][0], this.figureForm[3][1]]];
-            this.rightCells = newForm;
-            this.leftCells = newForm;
-            console.log(this.downCells);
-
-
-
-        } else if (deg === 0) {
-            // Rotate back to horizontal
+        } else {
             newForm = [
                 [this.figureForm[1][0] - 1, this.figureForm[1][1]], // Move left
                 this.figureForm[1],  // Keep the second block as the pivot
@@ -262,8 +207,30 @@ class Figura_I extends Figura {
                 [this.figureForm[1][0] + 2, this.figureForm[1][1]]  // Move right
             ];
         }
+
+        const isValid = newForm.every(([x, y]) => {
+            return x >= 0 && x < 9 && y >= 0 && y < 19 && board.getCell([x, y])?.isEmpty;
+        });
     
+        if (!isValid) {
+            this.setFigurePositionOnBoard(board);
+            console.warn("Rotation not possible, position out of bounds or blocked.");
+            return;
+        }
+        
+        this.figureForm =  newForm.map(item => [...item]);
         this.setFigurePositionOnBoard(board);
+       
+        if(deg === DegEnum.ONE || deg === DegEnum.THREE){
+            this.downCells = [[this.figureForm[3][0],this.figureForm[3][1]]];
+            this.rightCells = this.figureForm.map(item => [...item]);
+            this.leftCells = this.figureForm.map(item => [...item]);
+        } else {
+            this.downCells = this.figureForm.map(item => [...item]);
+            this.rightCells = [[...this.figureForm[3]]];
+            this.leftCells = [[...this.figureForm[0]]];
+        }
+        
     }
 }
 
@@ -282,7 +249,6 @@ class Figura_O extends Figura implements IFigures {
         this.rightCells = [[5,0], [5,1]];
         this.leftCells = [[4,0], [4,1]];
     }
-
 }
 
 class Figura_T extends Figura implements IFigures {
@@ -301,6 +267,111 @@ class Figura_T extends Figura implements IFigures {
         this.rightCells = [[4,0], [4,2], [5,1]];
         this.leftCells = [[4,0], [4,1], [4,2]];
     }
+
+    rotate(deg: DegEnum, board: IBoard): void {
+        this.degree = deg;
+        let newForm: number[][] = [];
+
+        if (deg === DegEnum.ONE) {
+
+           /*   
+                [4,0],
+                [4,1],[5,1],
+                [4,2]
+
+            [4,1],[5,1],[6,1],
+                  [5,2]
+            */
+            newForm = [
+                [this.figureForm[0][0], this.figureForm[0][1] + 1], //4 1
+                [this.figureForm[1][0] + 1, this.figureForm[1][1]], // 5 1
+                [this.figureForm[2][0] + 1, this.figureForm[2][1]], // 6 1
+                [this.figureForm[3][0] + 1, this.figureForm[3][1]]  // 5 2
+             ];
+            
+        } else if(deg === DegEnum.TWO) {
+
+            /* 
+            [4,1],[5,1],[6,1],
+                  [5,2]
+            
+                 [5,1]
+            [4,2][5,2]
+                 [5,3]
+            */
+            newForm = [
+                [this.figureForm[0][0] + 1, this.figureForm[0][1]], //5 1
+                [this.figureForm[1][0] - 1, this.figureForm[1][1] + 1], // 4 2
+                [this.figureForm[2][0] - 1 , this.figureForm[2][1] + 1], // 5 2
+                [this.figureForm[3][0], this.figureForm[3][1] + 1]  //  5 3
+            ];
+    
+        } else if(deg === DegEnum.THREE) {
+             
+            /* 
+                     [5,1]
+                [4,2][5,2]
+                     [5,3]
+                 
+                      [5, 1]
+                [4,2][5, 2][6,2]
+             */    
+            newForm = [
+                [this.figureForm[0][0], this.figureForm[0][1]], //5 1
+                [this.figureForm[1][0], this.figureForm[1][1]], // 4 2
+                [this.figureForm[2][0], this.figureForm[2][1]], // 5 2
+                [this.figureForm[3][0] + 1, this.figureForm[3][1] - 1]  //  6 2
+            ];
+            
+        } else {
+             /*     
+                      [5, 1]
+                [4, 2][5, 2][6,2]
+             */    
+
+                /*  [4,0],
+                    [4,1],[5,1],
+                    [4,2]
+            */
+            newForm = [
+                [this.figureForm[0][0]-1, this.figureForm[0][1]-1], //4 0
+                [this.figureForm[1][0], this.figureForm[1][1]-1], // 4 1
+                [this.figureForm[2][0], this.figureForm[2][1]-1], // 5 1
+                [this.figureForm[3][0]-2, this.figureForm[3][1]]  //4 2
+            ];
+        }
+
+        const isValid = newForm.every(([x, y]) => {
+            return x >= 0 && x < 9 && y >= 0 && y < 19 && board.getCell([x, y])?.isEmpty;
+        });
+    
+        if (!isValid) {
+            this.setFigurePositionOnBoard(board);
+            console.warn("Rotation not possible, position out of bounds or blocked.");
+            return;
+        }
+
+        this.figureForm =  newForm.map(item => [...item]);
+        this.setFigurePositionOnBoard(board);
+
+        if(deg === DegEnum.ONE){
+            this.downCells = [[...this.figureForm[0]], [...this.figureForm[2]], [...this.figureForm[3]]];
+            this.rightCells = [[...this.figureForm[2]], [...this.figureForm[3]]];
+            this.leftCells = [[...this.figureForm[0]], [...this.figureForm[3]]];
+        } else if (deg === DegEnum.TWO){
+            this.downCells = [[...this.figureForm[1]], [...this.figureForm[3]]];
+            this.rightCells = [[...this.figureForm[0]], [...this.figureForm[2]], [...this.figureForm[3]]];
+            this.leftCells = [[...this.figureForm[0]], [...this.figureForm[1]], [...this.figureForm[3]]];
+        } else if (deg === DegEnum.THREE) {
+            this.downCells = [[...this.figureForm[1]], [...this.figureForm[2]], [...this.figureForm[3]]];
+            this.rightCells = [[...this.figureForm[0]], [...this.figureForm[3]]];
+            this.leftCells = [[...this.figureForm[0]], [...this.figureForm[1]]];
+        } else {
+            this.downCells = [[...this.figureForm[2]], [...this.figureForm[3]]];
+            this.rightCells = [[...this.figureForm[0]], [...this.figureForm[2]], [...this.figureForm[3]]];
+            this.leftCells = [[...this.figureForm[0]], [...this.figureForm[1]], [...this.figureForm[3]]];
+        }
+    }
 }
 
 class Figura_L extends Figura implements IFigures {
@@ -318,6 +389,106 @@ class Figura_L extends Figura implements IFigures {
         this.downCells = [[4,0], [5,2]];
         this.rightCells = [[5,0], [5,1], [5,2]];
         this.leftCells = [[4,0], [5,1], [5,2]];
+    }
+
+    rotate(deg: DegEnum, board: IBoard): void {
+        this.degree = deg;
+        let newForm: number[][] = [];
+
+        if (deg === DegEnum.ONE) {
+           /*   
+                [4,0],  [5,0], 
+                        [5,1],
+                        [5,2]
+
+                        [6,0]
+              [4,1][5,1][6,1]
+            */
+            newForm = [
+                [this.figureForm[0][0]+2, this.figureForm[0][1]], //6 0
+                [this.figureForm[1][0]-1, this.figureForm[1][1]+1], // 4 1
+                [this.figureForm[2][0], this.figureForm[2][1]], // 5 1
+                [this.figureForm[3][0]+1, this.figureForm[3][1]-1]  // 6 1
+             ];
+            
+        } else if(deg === DegEnum.TWO) {
+            /* 
+                        [6,0]
+              [4,1][5,1][6,1]
+            
+                [4,1]
+                [4,2]
+                [4,3][5,3]
+            */
+            newForm = [
+                [this.figureForm[0][0]-2, this.figureForm[0][1]+1], // 4 1
+                [this.figureForm[1][0], this.figureForm[1][1]+1], // 4 2
+                [this.figureForm[2][0]-1, this.figureForm[2][1]+2], // 4 3
+                [this.figureForm[3][0]-1, this.figureForm[3][1]+2]  // 5 3
+            ];
+    
+        } else if(deg === DegEnum.THREE) {
+            /* 
+                [4,1]
+                [4,2]
+                [4,3][5,3]
+                 
+                [4,2][5,2][6,2]
+                [4,3]
+             */    
+            newForm = [
+                [this.figureForm[0][0], this.figureForm[0][1]+1], // 4 2
+                [this.figureForm[1][0]+1, this.figureForm[1][1]], // 5 2
+                [this.figureForm[2][0]+2, this.figureForm[2][1]-1], // 6 2
+                [this.figureForm[3][0]-1, this.figureForm[3][1]]  // 4 3
+            ];
+            
+        } else {
+             /*     
+                [4,2][5,2][6,2]
+                [4,3]
+             
+                [4,1][5,1]
+                     [5,2]
+                     [5,3]
+            */
+            newForm = [
+                [this.figureForm[0][0], this.figureForm[0][1]-1], // 4 1
+                [this.figureForm[1][0], this.figureForm[1][1]-1], // 5 1
+                [this.figureForm[2][0]-1, this.figureForm[2][1]], // 5 2
+                [this.figureForm[3][0]+1, this.figureForm[3][1]]  // 5 3
+            ];
+        }
+
+        const isValid = newForm.every(([x, y]) => {
+            return x >= 0 && x < 9 && y >= 0 && y < 19 && board.getCell([x, y])?.isEmpty;
+        });
+        if (!isValid) {
+            this.setFigurePositionOnBoard(board);
+            console.warn("Rotation not possible, position out of bounds or blocked.");
+            return;
+        }
+
+        this.figureForm =  newForm.map(item => [...item]);
+        this.setFigurePositionOnBoard(board);
+
+        if(deg === DegEnum.ONE){
+            this.downCells = [[...this.figureForm[1]], [...this.figureForm[2]], [...this.figureForm[3]]];
+            this.rightCells = [[...this.figureForm[0]], [...this.figureForm[3]]];
+            this.leftCells = [[...this.figureForm[0]], [...this.figureForm[1]]];
+        } else if (deg === DegEnum.TWO){
+            this.downCells = [[...this.figureForm[2]], [...this.figureForm[3]]];
+            this.rightCells = [[...this.figureForm[0]], [...this.figureForm[1]], [...this.figureForm[3]]];
+            this.leftCells = [[...this.figureForm[0]], [...this.figureForm[1]], [...this.figureForm[2]]];
+        } else if (deg === DegEnum.THREE) {
+            this.downCells = [[...this.figureForm[1]], [...this.figureForm[2]], [...this.figureForm[3]]];
+            this.rightCells = [[...this.figureForm[2]], [...this.figureForm[3]]];
+            this.leftCells = [[...this.figureForm[0]], [...this.figureForm[3]]];
+        } else {
+            this.downCells = [[...this.figureForm[0]], [...this.figureForm[3]]];
+            this.rightCells = [[...this.figureForm[1]], [...this.figureForm[2]], [...this.figureForm[3]]];
+            this.leftCells = [[...this.figureForm[0]], [...this.figureForm[2]], [...this.figureForm[3]]];
+        }
     }
 }
 
