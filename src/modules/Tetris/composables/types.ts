@@ -31,6 +31,7 @@ export interface IFigures {
     moveLeft(): void
     rotate?(deg: DegEnum, board: IBoard): void
     moveDeg(deg: DegEnum): void
+    changeRotationCells(figure: number[][],q:number[],w:number[],e:number[],r:number[]):number[][]
 }
 
 export interface ICell {

@@ -98,6 +98,7 @@
         const list = [DegEnum.DEFAULT, DegEnum.ONE, DegEnum.TWO, DegEnum.THREE];
         const result = list.indexOf(currentFigure.degree)
         const index = result === list.length-1 ? 0 : result + 1
+
         return currentFigure.moveDeg(list[index])
     }
 
@@ -107,7 +108,8 @@
         e.preventDefault();
         if (e.key === "ArrowLeft") return currentFigure.moveLeft();
         if (e.key === "ArrowRight") return currentFigure.moveRight();
-        if (e.key === "ArrowDown") return speedGame.value = 100;  
+        if (e.key === "ArrowDown") return speedGame.value = 100;
+        if (e.key === "ArrowUp") return Rotate();
         if (e.code === "Space") return Pause();
     }, {signal});
 
@@ -123,7 +125,7 @@
             <button @click="currentFigure.moveLeft()" class="border-2 p-4 rounded-md">Left</button>
             <button @click="currentFigure.moveRight()" class="border-2 p-4 rounded-md">Right</button>
             <button @mousedown="speedGame = 100" @mouseup="speedGame = 500" class="border-2 p-4 rounded-md">Down</button>
-            <button @click="Rotate()" class="border-2 p-4 rounded-md">Rotate</button>
+            <button @click="Rotate" class="border-2 p-4 rounded-md">Rotate</button>
         </div>
         <div id="tetrisBoard" >
             <div class="row" v-for="row, index in board.cells" :key="index">
