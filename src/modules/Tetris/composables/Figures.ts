@@ -199,9 +199,9 @@ class Figura_I extends Figura {
         let newForm: number[][] = [];
     
         if (deg === DegEnum.ONE || deg === DegEnum.THREE) {
-            newForm = this.changeRotationCells(this.figureForm, [0,0], [0,1], [0,2], [0,3])
+            newForm = this.changeRotationCells(this.figureForm, [1,0], [0,1], [-1,2], [-2,3])
         } else {
-            newForm = this.changeRotationCells(this.figureForm,[-1,0], [0,0], [1,0], [2,0])
+            newForm = this.changeRotationCells(this.figureForm,[-1,0], [0,-1], [1,-2], [2,-3])
         }
 
         const isValid = newForm.every(([x, y]) => {
