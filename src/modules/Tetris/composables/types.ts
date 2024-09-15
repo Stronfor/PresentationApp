@@ -6,6 +6,8 @@ export interface IBoard {
     getCell([]): ICell | undefined
     setFigure(figure: IFigures):void
     isGameOver():boolean
+    deleteRow(index: number): void
+    score():void
 }
 
 type aboutFigureType = {
@@ -44,6 +46,14 @@ export interface ICell {
     changeColor(x: ColorsEnum): void
     changeEmpty(state: boolean): void
 
+}
+
+export interface IPlayer {
+    name: string
+    score: number
+    password: string
+
+    continueGame(name: string, password: string):void
 }
 
 export enum ColorsEnum {

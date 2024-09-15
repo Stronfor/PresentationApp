@@ -1,5 +1,5 @@
 import Cell from "./Cell";
-import type { ICell, IBoard, IFigures } from "./types";
+import { type ICell, type IBoard, type IFigures } from "./types";
 
 
 export default class Board implements IBoard {
@@ -14,6 +14,15 @@ export default class Board implements IBoard {
             }
             this.cells.push(row)
         }
+    }
+
+    deleteRow(indexRow: number){
+        this.cells = this.cells.filter((item, i) => i !== indexRow)
+        const row: ICell[] = []
+        for(let j = 0; j < 10; j++){
+            row.push(new Cell(j, 0))
+        }
+        this.cells.unshift(row);
     }
 
     getCell([x, y]: number[]){
@@ -33,5 +42,14 @@ export default class Board implements IBoard {
 
     isGameOver(){
         return this.cells[0][4].isEmpty === false || this.cells[0][5].isEmpty === false
+    }
+    
+    score(){
+        this.cells.forEach((item:ICell[], i) => {
+            const fullRow = item.every((cell: ICell) => !cell.isEmpty)
+            if(fullRow){
+                this.deleteRow(i)
+            }
+        })
     }
 }

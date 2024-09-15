@@ -43,13 +43,13 @@
     let currentFigure:IFigures = initialNewFigure(randomFigure())
 
     const moveFigure = () => {
-    
         if(currentFigure.canMoveDown(board.value)){
             currentFigure.checkMoveDirection(board.value)
         } else {
             if(board.value.isGameOver()){
                 Stop()
             }else{
+                board.value.score()
                 currentFigure = initialNewFigure(randomFigure())
             }
         }
