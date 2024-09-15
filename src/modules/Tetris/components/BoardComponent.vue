@@ -44,7 +44,7 @@
 
     const moveFigure = () => {
         if(currentFigure.canMoveDown(board.value)){
-            currentFigure.checkMoveDirection(board.value)
+            currentFigure.movingDown(board.value)
         } else {
             if(board.value.isGameOver()){
                 Stop()
@@ -99,15 +99,15 @@
         const result = list.indexOf(currentFigure.degree)
         const index = result === list.length-1 ? 0 : result + 1
 
-        return currentFigure.moveDeg(list[index])
+        return currentFigure.rotateDeg(list[index], board.value)
     }
 
     // =======> Events <========
 
     document.addEventListener('keydown', (e) => {
         e.preventDefault();
-        if (e.key === "ArrowLeft") return currentFigure.moveLeft();
-        if (e.key === "ArrowRight") return currentFigure.moveRight();
+        if (e.key === "ArrowLeft") return currentFigure.moveLeft(board.value);
+        if (e.key === "ArrowRight") return currentFigure.moveRight(board.value);
         if (e.key === "ArrowDown") return speedGame.value = 100;
         if (e.key === "ArrowUp") return Rotate();
         if (e.code === "Space") return Pause();
@@ -122,8 +122,8 @@
 <template>
     <div class="flex gap-8 items-center">
         <div class="w-[30%] flex justify-center gap-4">
-            <button @click="currentFigure.moveLeft()" class="border-2 p-4 rounded-md">Left</button>
-            <button @click="currentFigure.moveRight()" class="border-2 p-4 rounded-md">Right</button>
+            <button @click="currentFigure.moveLeft(board)" class="border-2 p-4 rounded-md">Left</button>
+            <button @click="currentFigure.moveRight(board)" class="border-2 p-4 rounded-md">Right</button>
             <button @mousedown="speedGame = 100" @mouseup="speedGame = 500" class="border-2 p-4 rounded-md">Down</button>
             <button @click="Rotate" class="border-2 p-4 rounded-md">Rotate</button>
         </div>

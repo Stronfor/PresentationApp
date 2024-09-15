@@ -27,12 +27,12 @@ export interface IFigures {
     degree: DegEnum
 
     about():aboutFigureType
-    checkMoveDirection(board: IBoard):void
+    movingDown(board: IBoard):void
     canMoveDown(board: IBoard): boolean
-    moveRight(): void
-    moveLeft(): void
+    moveRight(board: IBoard): void
+    moveLeft(board: IBoard): void
     rotate?(deg: DegEnum, board: IBoard): void
-    moveDeg(deg: DegEnum): void
+    rotateDeg(deg: DegEnum, board: IBoard): void
     changeRotationCells(figure: number[][],q:number[],w:number[],e:number[],r:number[]):number[][]
 }
 

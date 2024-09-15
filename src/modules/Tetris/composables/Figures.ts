@@ -9,7 +9,6 @@ class Figura implements IFigures {
     rightCells: number[][] = [];
     leftCells: number[][] = [];
     name: string = '';
-    nextTickMoveDirection: string |  DegEnum | null = null;
 
     about() {
         return {
@@ -52,8 +51,49 @@ class Figura implements IFigures {
         ]
     }
 
-    moving(direction: string | null | DegEnum, board: IBoard){
-        if(direction === 'right'){
+    movingDown(board: IBoard){
+        this.clearFigurePositionOnBoard(board)
+        this.figureForm.forEach((item) => {
+            item[1]+=1;
+            const cell = board.getCell(item)
+            cell?.changeColor(this.color);
+            cell?.changeEmpty(false)
+        });
+        this.downCells.forEach((item) => item[1]+=1);
+        this.rightCells.forEach((item) => item[1]+=1);
+        this.leftCells.forEach((item) => item[1]+=1);
+    };
+
+    moveRight(board: IBoard){
+        let isCanMove: boolean = false
+        let isFind: boolean = false
+
+        this.rightCells.forEach(([x, y]) => {
+            if(!isFind){
+                if(x < 9) {
+                    isCanMove = true;
+                } else{
+                    isCanMove = false;
+                    isFind = true
+                }
+            }
+        })
+        if(isCanMove){
+            let isFind: boolean = false
+            this.rightCells.forEach(([x, y]) => {
+                if(!isFind){
+                    if(board.getCell([x + 1, y])?.isEmpty){
+                        isCanMove = true;
+                    } else {
+                        isCanMove = false;
+                        isFind = true;
+                    }
+                }
+
+            })
+        } 
+        if(isCanMove){
+            this.clearFigurePositionOnBoard(board)
             this.downCells.forEach((item) => item[0]+=1);
             this.rightCells.forEach((item) => item[0]+=1);
             this.leftCells.forEach((item) => item[0]+=1);
@@ -63,7 +103,38 @@ class Figura implements IFigures {
                 cell?.changeColor(this.color);
                 cell?.changeEmpty(false)
             });
-        } else if(direction === 'left'){
+        }
+    }
+
+    moveLeft(board: IBoard){
+        let isCanMove: boolean = false
+        let isFind: boolean = false
+
+        this.leftCells.forEach(([x, y]) => {
+            if(!isFind){
+                if(x > 0) {
+                    isCanMove = true;
+                } else{
+                    isCanMove = false;
+                    isFind = true
+                }
+            }
+        })
+        if(isCanMove){
+            let isFind: boolean = false
+            this.leftCells.forEach(([x, y]) => {
+                if(!isFind){
+                    if(board.getCell([x - 1, y])?.isEmpty){
+                        isCanMove = true;
+                    } else {
+                        isCanMove = false;
+                        isFind = true;
+                    }
+                }
+            })
+        }
+        if(isCanMove){
+            this.clearFigurePositionOnBoard(board)
             this.downCells.forEach((item) => item[0]-=1)
             this.rightCells.forEach((item) => item[0]-=1)
             this.leftCells.forEach((item) => item[0]-=1)
@@ -73,113 +144,19 @@ class Figura implements IFigures {
                 cell?.changeColor(this.color);
                 cell?.changeEmpty(false)
             });
-        } else if(typeof direction === 'number'){
-            this.rotate(direction, board);
-        } else {
-            this.figureForm.forEach((item) => {
-                item[1]+=1;
-                const cell = board.getCell(item)
-                cell?.changeColor(this.color);
-                cell?.changeEmpty(false)
-            });
-            this.downCells.forEach((item) => item[1]+=1);
-            this.rightCells.forEach((item) => item[1]+=1);
-            this.leftCells.forEach((item) => item[1]+=1);
         }
-    };
+    }
 
-    checkMoveDirection(board: IBoard){
-        if(this.nextTickMoveDirection){
-            if(this.nextTickMoveDirection === "right"){
-                let isCanMove: boolean = false
-                let isFind: boolean = false
+    rotate(deg: DegEnum, board: IBoard): void{}
 
-                this.rightCells.forEach(([x, y]) => {
-                    if(!isFind){
-                        if(x < 9) {
-                            isCanMove = true;
-                        } else{
-                            isCanMove = false;
-                            isFind = true
-                        }
-                    }
-                })
-                if(isCanMove){
-                    let isFind: boolean = false
-                    this.rightCells.forEach(([x, y]) => {
-                        if(!isFind){
-                            if(board.getCell([x + 1, y])?.isEmpty){
-                                isCanMove = true;
-                            } else {
-                                isCanMove = false;
-                                isFind = true;
-                            }
-                        }
-
-                    })
-                } 
-                if(isCanMove){
-                    this.clearFigurePositionOnBoard(board)
-                    this.moving(this.nextTickMoveDirection, board);
-                }
-            } else if (this.nextTickMoveDirection === "left"){
-                let isCanMove: boolean = false
-                let isFind: boolean = false
-
-                this.leftCells.forEach(([x, y]) => {
-                    if(!isFind){
-                        if(x > 0) {
-                            isCanMove = true;
-                        } else{
-                            isCanMove = false;
-                            isFind = true
-                        }
-                    }
-                })
-                if(isCanMove){
-                    let isFind: boolean = false
-                    this.leftCells.forEach(([x, y]) => {
-                        if(!isFind){
-                            if(board.getCell([x - 1, y])?.isEmpty){
-                                isCanMove = true;
-                            } else {
-                                isCanMove = false;
-                                isFind = true;
-                            }
-                        }
-                    })
-                }
-                if(isCanMove){
-                    this.clearFigurePositionOnBoard(board)
-                    this.moving(this.nextTickMoveDirection, board);
-                }
-            } else if (typeof this.nextTickMoveDirection === 'number'){
-                this.clearFigurePositionOnBoard(board)
-                this.moving(this.nextTickMoveDirection, board);
-            }
-        } else {
+    rotateDeg(deg: DegEnum, board: IBoard): void {
+        if(this.name !== 'O' && this.name !== 'D'){
             this.clearFigurePositionOnBoard(board)
-            this.moving(null, board);
+            this.rotate(deg, board)
         }
-        this.nextTickMoveDirection = null;
-    };
+    }
 
     canMoveDown = (board: IBoard) => this.downCells.every(([x, y]) => y < 19 && board.getCell([x, y + 1])?.isEmpty);
-
-    moveRight(){
-        this.nextTickMoveDirection = 'right'
-    };
-
-    moveLeft(){
-        this.nextTickMoveDirection = 'left'
-    };
-
-    moveDeg(deg: DegEnum) {
-        if(this.name !== 'O' && this.name !== 'D')
-        this.nextTickMoveDirection = deg;
-    };
-
-    rotate(deg: DegEnum, board: IBoard){}
 }
 
 class Figura_I extends Figura {
