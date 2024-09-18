@@ -1,6 +1,6 @@
 import Cell from "./Cell";
-import { type ICell, type IBoard, type IFigures } from "./types";
-
+import Player from "./Player";
+import { type ICell, type IBoard, type IFigures, type IPlayer } from "./types";
 
 export default class Board implements IBoard {
 
@@ -44,11 +44,12 @@ export default class Board implements IBoard {
         return this.cells[0][4].isEmpty === false || this.cells[0][5].isEmpty === false
     }
     
-    score(){
+    score(player: IPlayer | undefined){
         this.cells.forEach((item:ICell[], i) => {
             const fullRow = item.every((cell: ICell) => !cell.isEmpty)
             if(fullRow){
                 this.deleteRow(i)
+                if(player)player.score++
             }
         })
     }

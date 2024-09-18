@@ -1,0 +1,18 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "Sergio-portfolio backend part",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "node --watch index"
+  },
+  "author": "Sergii Kabaliuk",
+  "license": "ISC",
+  "dependencies": {
+    "better-sqlite3": "^11.3.0",
+    "fastify": "^5.0.0",
+    "fastify-bcrypt": "^1.0.1"
+  }
+}

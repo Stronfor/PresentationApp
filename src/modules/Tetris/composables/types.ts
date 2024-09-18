@@ -7,7 +7,7 @@ export interface IBoard {
     setFigure(figure: IFigures):void
     isGameOver():boolean
     deleteRow(index: number): void
-    score():void
+    score(player: IPlayer | undefined):void
 }
 
 type aboutFigureType = {
@@ -52,6 +52,8 @@ export interface IPlayer {
     name: string
     score: number
     password: string
+    record: number
+    lastGame: string
 
     continueGame(name: string, password: string):void
 }
