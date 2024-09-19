@@ -11,6 +11,7 @@
   "author": "Sergii Kabaliuk",
   "license": "ISC",
   "dependencies": {
+    "@fastify/cors": "^10.0.0",
     "better-sqlite3": "^11.3.0",
     "fastify": "^5.0.0",
     "fastify-bcrypt": "^1.0.1"

@@ -9,6 +9,9 @@ const fastify = Fastify({
 fastify.register(import('fastify-bcrypt'), {
     saltWorkFactor: 12
 })
+fastify.register(import('@fastify/cors'), { 
+    origin: 'http://localhost:8080'  // Allow requests from this origin
+  });
 
 const db = new Database('tetrisPlayers.db');
 
@@ -36,7 +39,7 @@ fastify.post('/addPlayer', async (request, reply) => {
             VALUES (?, ?, ?, ?)
         `);
         prepareRequest.run(name, passHash, record, lastGame);
-        reply.send({ data: { name, password, record, lastGame }, success: true, message: 'Player added successfully' });
+        reply.send({ data: { name, record, lastGame }, success: true, message: 'Player added successfully' });
     } catch (err) {
     reply.status(500).send({ success: false, message: err.message });
     }
