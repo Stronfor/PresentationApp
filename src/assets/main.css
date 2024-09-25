@@ -24,3 +24,7 @@ body {
   margin: 0;
   line-height: inherit;
 }
+
+button:disabled {
+  opacity: 0.5;
+}

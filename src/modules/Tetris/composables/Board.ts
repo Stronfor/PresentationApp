@@ -40,11 +40,11 @@ export default class Board implements IBoard {
         }
     }
 
-    isGameOver(){
+    isBoardFull(){
         return this.cells[0][4].isEmpty === false || this.cells[0][5].isEmpty === false
     }
     
-    score(player: IPlayer | undefined){
+    score(player: IPlayer | null){
         this.cells.forEach((item:ICell[], i) => {
             const fullRow = item.every((cell: ICell) => !cell.isEmpty)
             if(fullRow){

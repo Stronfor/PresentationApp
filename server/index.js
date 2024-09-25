@@ -31,6 +31,11 @@ db.prepare(`
 fastify.post('/addPlayer', async (request, reply) => {
     const { name, password, record, lastGame } = request.body;
 
+    if (!name || !password) {
+        return reply.status(400).send({ success: false, error: 'Invalid input data' });
+    }
+  
+
     const passHash = await fastify.bcrypt.hash(password)
     
     try {
@@ -59,7 +64,7 @@ fastify.post('/getPlayer', async (request, reply) => {
         const isMatch = await fastify.bcrypt.compare(password, player.password);
 
         if (isMatch) {
-            reply.send(player);
+            reply.send({data: player, success: true});
         } else {
             reply.status(404).send({ success: false, message: 'Incorrect password' });
         }
@@ -92,10 +97,51 @@ fastify.get('/allPlayers', async (request, reply) => {
         if(!players){
             throw new Error('Oops ...')
         }
-        reply.send(players);
+        reply.send({data:players, success: true});
     } catch (err) {
     reply.status(500).send({ success: false, message: err.message });
     }
+});
+
+fastify.get('/bestPlayers', async (request, reply) => {
+    try {
+        const players = db.prepare(`SELECT name, record FROM players`).all();
+        if(!players){
+            throw new Error('Oops ...')
+        }
+        const best5Players = players.sort((a,b) => b.record - a.record).slice(0,5)
+        reply.send({data:best5Players, success: true});
+    } catch (err) {
+    reply.status(500).send({ success: false, message: err.message });
+    }
+});
+
+// update player
+fastify.put('/updatePlayer', async (request, reply) => {
+    try {
+        const { name, record, lastGame } = request.body;
+    
+        if (!name || typeof record === 'undefined' || !lastGame) {
+          return reply.status(400).send({ success: false, error: 'Invalid input data' });
+        }
+    
+        // Prepare and run the update statement
+        const stmt = db.prepare(`
+          UPDATE players
+          SET record = ?, lastGame = ?
+          WHERE name = ?
+        `);
+        const result = stmt.run(record, lastGame, name);
+    
+        if (result.changes === 0) {
+          return reply.status(404).send({ success: false, error: 'Player not found' });
+        }
+    
+        return reply.send({ data: {record, lastGame, name}, success: true, message: 'Player updated successfully' });
+      } catch (error) {
+        request.log.error(error);
+        return reply.status(500).send({ error: 'Internal Server Error' });
+      }
 });
 
 

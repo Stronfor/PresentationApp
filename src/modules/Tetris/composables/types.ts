@@ -5,9 +5,9 @@ export interface IBoard {
     initCells():void
     getCell([]): ICell | undefined
     setFigure(figure: IFigures):void
-    isGameOver():boolean
+    isBoardFull():boolean
     deleteRow(index: number): void
-    score(player: IPlayer | undefined):void
+    score(player: IPlayer | null):void
 }
 
 type aboutFigureType = {
@@ -51,11 +51,8 @@ export interface ICell {
 export interface IPlayer {
     name: string
     score: number
-    password: string
     record: number
     lastGame: string
-
-    continueGame(name: string, password: string):void
 }
 
 export enum ColorsEnum {
@@ -75,4 +72,10 @@ export enum DegEnum {
     TWO = 180,
     THREE = 270,
     DEFAULT = 360
+}
+
+export interface IPlayerServerData {
+    name: string
+    lastGame: string
+    record: number
 }

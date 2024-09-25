@@ -1,5 +1,10 @@
 <script setup lang="ts">
-    import { ref, onUnmounted } from "vue";
+    import { ref, onUnmounted, onMounted } from "vue";
+
+    import { useTetrisStore } from "../store/Tetris.strore";
+    import { storeToRefs } from 'pinia'
+
+    import timeNow from "@/utils/timeNow";
 
     import Board from "../composables/Board"
     import FigureFactory from "../composables/Figures"
@@ -14,9 +19,20 @@
 
     import {DegEnum, type IBoard, type IFigures, type IPlayer} from "../composables/types"
     import Player from "../composables/Player";
+    import updatePlayer from "../controllers/updatePlayer.put";
+    import getBestPlayer from "../controllers/getBestPlayers.get";
 
     const controller = new AbortController();
     const signal = controller.signal;
+
+    const TetrisStore = useTetrisStore();
+
+    const { player } = storeToRefs(TetrisStore);
+    const {setPlayer, setPlayerLastGame, setPlayerRecord, setPlayerName} = TetrisStore;
+
+    onMounted(async()=>{
+        await getBestPlayers()
+    })
 
     onUnmounted(()=> {
         controller.abort()
@@ -28,9 +44,17 @@
     const board = ref<IBoard>(new Board());
     board.value.initCells();
     const isGameStarted = ref(false);
-    const currentPlayer = ref<IPlayer | undefined>();
+    const isGameOver = ref(false);
+    const currentPlayer = ref<IPlayer | null>(null);
     const isPaused = ref(false);
+    const BestPlayers = ref<{ name: string; record: number; }[]>([]);
 
+    const getBestPlayers = async() => {
+        const request = await getBestPlayer();
+        if(request.success) {
+            BestPlayers.value = request.data
+        }
+    }
 
     const initialNewFigure = (type: string) => {
         const figure: IFigures = FigureFactory.createFigure(type)
@@ -54,15 +78,37 @@
     let currentFigure:IFigures
 
     const moveFigure = () => {
-        if(currentFigure.canMoveDown(board.value)){
-            if(!isPaused.value)currentFigure.movingDown(board.value)
-        } else {
-            if(board.value.isGameOver()){
-                isGameStarted.value = false;
-                isPaused.value = true;
-            }else{
-                board.value.score(currentPlayer.value)
-                currentFigure = initialNewFigure(randomFigure())
+        if(!isGameOver.value){
+            if(currentFigure.canMoveDown(board.value)){
+                if(!isPaused.value)currentFigure.movingDown(board.value)
+            } else {
+                if(board.value.isBoardFull()){
+                    GameOver()
+                }else{
+                    board.value.score(currentPlayer.value)
+                    currentFigure = initialNewFigure(randomFigure())
+                }
+            }
+        }
+    }
+
+    const GameOver = async() => {
+        clearTimeout(GameCircle);
+        currentFigure = null as unknown as IFigures;
+        isGameOver.value= true;
+        isGameStarted.value = false;
+        isPaused.value = true;
+
+        if(currentPlayer.value?.name){
+            const record = currentPlayer.value?.record < currentPlayer.value?.score ? currentPlayer.value?.score : currentPlayer.value?.record
+            const lastGame = timeNow()
+            
+            const request = await updatePlayer(currentPlayer.value?.name, record, lastGame);
+            if(request.success) {
+                setPlayerRecord(request.data.record)
+                setPlayerLastGame(request.data.lastGame)
+
+                await getBestPlayers();
             }
         }
     }
@@ -79,22 +125,17 @@
         } else clearTimeout(GameCircle)
     }
 
-
     const Start = () => {
+        isGameOver.value= false;
         board.value =  new Board()
         board.value.initCells()
-        if(!currentPlayer.value?.name) currentPlayer.value = new Player();
+        if(!currentPlayer.value?.name && player.value.name) currentPlayer.value = new Player(player.value.name, player.value.record, player.value.lastGame);
+        if(!player.value.name) currentPlayer.value = new Player()
+        if(currentPlayer.value?.name) currentPlayer.value.score = 0;
         currentFigure = initialNewFigure(randomFigure())
         isGameStarted.value = true;
         isPaused.value = false
         circleGame()
-    }
-
-    const StopGame = () => {
-        clearTimeout(GameCircle);
-        currentFigure = null as unknown as IFigures;
-        isGameStarted.value = false;
-        isPaused.value = true;
     }
 
     const Pause = () => {
@@ -115,23 +156,27 @@
         }
     }
 
-    // =======> Events <========
+// =======> Events <========
 
     document.addEventListener('keydown', (e) => {
         if (e.key === "ArrowLeft" && !isPaused.value){
             e.preventDefault()
+            btnPushLeft.value ='dark:shadow-xl shadow-2xl'
             return currentFigure.moveLeft(board.value);
         }
         if (e.key === "ArrowRight" && !isPaused.value){
             e.preventDefault()
+            btnPushRight.value ='dark:shadow-xl shadow-2xl'
             return currentFigure.moveRight(board.value);
-        } 
+        }
         if (e.key === "ArrowDown" && !isPaused.value){
             e.preventDefault()
+            btnPushDown.value ='dark:shadow-xl shadow-2xl'
             return speedGame.value = 50;
         }
         if (e.key === "ArrowUp") {
             e.preventDefault()
+            btnPushUp.value ='dark:shadow-xl shadow-2xl'
             return Rotate();
         }
         if (e.code === "Space"){
@@ -142,97 +187,163 @@
 
     document.addEventListener('keyup', (e) => {
         e.preventDefault()
+        btnPushUp.value =''
+        btnPushDown.value =''
+        btnPushRight.value =''
+        btnPushLeft.value =''
         if(e.key === "ArrowDown") return speedGame.value = 500;
     }, {signal});
 
+    const playerExitEmit = () => {
+        GameOver();
+        currentPlayer.value = null;
+    }
+
+    const btnPushUp = ref("")
+    const btnPushDown = ref("")
+    const btnPushRight = ref("")
+    const btnPushLeft = ref("")
+
 </script>
 <template>
-    <div class="flex gap-8 items-center">
-        <div class="w-1/3">
-            <div class="flex flex-col gap-1 mb-14">
-                <Auth />
-                <div class="flex justify-between gap-5">
-                    <button @click="isGameStarted ? StopGame() : Start()" class="shadow-xl text-hoverText outline-none border border-zinc300 dark:border-zinc600 mb-24 p-4 rounded-xl mx-auto w-40 h-20 dark:bg-zinc900 dark:hover:bg-zinc800 bg-zinc100 hover:bg-zinc200 transition">
-                        {{isGameStarted ? 'Stop Game' : 'Start New Game'}}
-                    </button>
-                    <button @click="Pause" class="shadow-xl outline-none w-24 h-20 border border-zinc300 dark:border-zinc600 p-4 rounded-xl mx-auto dark:bg-zinc900 dark:hover:bg-zinc800 bg-zinc100 hover:bg-zinc200 transition">
-                        <Play v-if="isPaused" _class="mx-auto text-hoverText" width="32" height="32" />
-                        <PauseImg v-else  _class="mx-auto text-hoverText" width="32" height="32" />
-                    </button>
-                </div>
-                <button @click="Rotate" class="shadow-xl outline-none border border-zinc300 dark:border-zinc600 p-4 rounded-xl mx-auto w-16 h-20 dark:bg-zinc900 dark:hover:bg-zinc800 bg-zinc100 hover:bg-zinc200 transition">
-                    <ArrowRotate _class="mx-auto text-hoverText" height="32" width="32" />
-                </button>
-                <div class="flex justify-center gap-16">
-                    <button @click="currentFigure.moveLeft(board)" class="shadow-xl outline-none border border-zinc300 dark:border-zinc600 p-4 rounded-xl w-20 h-16 dark:bg-zinc900 dark:hover:bg-zinc800 bg-zinc100 hover:bg-zinc200 transition">
-                        <Arrow _class="mx-auto text-hoverText" height="32" width="32" />
-                    </button>
-                    <button @click="currentFigure.moveRight(board)" class="shadow-xl outline-none border border-zinc300 dark:border-zinc600 p-4 rounded-xl w-20 h-16 dark:bg-zinc900 dark:hover:bg-zinc800 bg-zinc100 hover:bg-zinc200 transition">
-                        <Arrow _class="mx-auto text-hoverText rotate-180" height="32" width="32" />
-                    </button>
-                </div>
-                <button @mousedown="speedGame = 50" @mouseup="speedGame = 500" class="shadow-xl outline-none border border-zinc300 dark:border-zinc600 p-4 rounded-xl mx-auto w-16 h-20 dark:bg-zinc900 dark:hover:bg-zinc800 bg-zinc100 hover:bg-zinc200 transition">
-                    <Arrow _class="mx-auto text-hoverText -rotate-90" height="32" width="32" />
-                </button>
-            </div>
+  <div class="flex items-start">
+    <div class="w-1/3">
+      <div class="flex flex-col mb-14 mt-10">
+        <div
+          class="border border-zinc200 dark:border-zinc800 rounded-2xl p-10 mb-10"
+        >
+          <div class="flex gap-3">
+            <ScoreImg _class="text-zinc500" width="32" height="32" />
+            <h4 class="text-2xl font-semibold mb-5">Score</h4>
+          </div>
+          <p class="text-4xl font-bold">{{ currentPlayer?.score ?? 0 }}</p>
         </div>
-        <div id="tetrisBoard" >
-            <div class="row" v-for="row, index in board.cells" :key="index">
-                <div class="cell" :style="`background-color: ${col.color}`" style="color: blueviolet" v-for="col in row" :key="col.id"></div>
-            </div>
+
+        <button
+          @mousedown="btnPushUp ='dark:shadow-xl shadow-2xl'"
+          @mouseup="btnPushUp = ''"
+          @click="Rotate"
+          :class="btnPushUp"
+          class="shadow-xl dark:shadow-md dark:shadow-zinc500 outline-none border border-zinc300 dark:border-zinc600 p-4 rounded-xl mx-auto w-16 h-20 dark:bg-zinc900 dark:hover:bg-zinc800 bg-zinc100 hover:bg-zinc200 transition"
+        >
+          <ArrowRotate _class="mx-auto text-hoverText" height="32" width="32" />
+        </button>
+        <div class="flex justify-center gap-16">
+          <button
+            @mousedown="btnPushLeft ='dark:shadow-xl shadow-2xl'"
+            @mouseup="btnPushLeft = ''"
+            :class="btnPushLeft"
+            @click="currentFigure.moveLeft(board)"
+            class="shadow-xl dark:shadow-md dark:shadow-zinc500 outline-none border border-zinc300 dark:border-zinc600 p-4 rounded-xl w-20 h-16 dark:bg-zinc900 dark:hover:bg-zinc800 bg-zinc100 hover:bg-zinc200 transition"
+          >
+            <Arrow _class="mx-auto text-hoverText" height="32" width="32" />
+          </button>
+          <button
+            @mousedown="btnPushRight ='dark:shadow-xl shadow-2xl'"
+            @mouseup="btnPushRight = ''"
+            :class="btnPushRight"
+            @click="currentFigure.moveRight(board)"
+            class="shadow-xl dark:shadow-md dark:shadow-zinc500 outline-none border border-zinc300 dark:border-zinc600 p-4 rounded-xl w-20 h-16 dark:bg-zinc900 dark:hover:bg-zinc800 bg-zinc100 hover:bg-zinc200 transition"
+          >
+            <Arrow
+              _class="mx-auto text-hoverText rotate-180"
+              height="32"
+              width="32"
+            />
+          </button>
         </div>
-        <div class="w-1/3">
-            <div class="border border-zinc200 dark:border-zinc800  rounded-2xl p-10 m-10">
-                <div class="flex gap-3">
-                    <ScoreImg _class="text-zinc500" width="32" height="32" />
-                    <h4 class="text-2xl font-semibold mb-5">Score</h4>
-                </div>
-                <p class="text-4xl font-bold">{{ currentPlayer?.score ?? 0 }}</p>
-            </div>
-            <div class="border border-zinc200 dark:border-zinc800  rounded-2xl p-10 m-10">
-                <div class="flex gap-3">
-                    <Players _class="text-zinc500" width="32" height="32" />
-                    <h4 class="text-2xl font-semibold mb-5">Best players</h4>
-                </div>
-                <div>
-                    <div class="flex justify-between items-center">
-                        <p class="text-xl leading-10 text-hoverText">Serg: </p><span class="text-zinc500">{{ 10050 }}</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <p class="text-xl leading-10 text-hoverText">Timoty: </p><span class="text-zinc500">{{ 10050 }}</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <p class="text-xl leading-10 text-hoverText">Anastasiya: </p><span class="text-zinc500">{{ 10050 }}</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <p class="text-xl leading-10 text-hoverText">Dark: </p><span class="text-zinc500">{{ 10050 }}</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <p class="text-xl leading-10 text-hoverText">Light: </p><span class="text-zinc500">{{ 10050 }}</span>
-                    </div>
-                </div>
-            </div>
+        <button
+          @mousedown="speedGame = 50; btnPushDown ='dark:shadow-xl shadow-2xl'"
+          @mouseup="speedGame = 500; btnPushDown = ''"
+          :class="btnPushDown"
+          class="mb-10 shadow-xl dark:shadow-md dark:shadow-zinc500 outline-none border border-zinc300 dark:border-zinc600 p-4 rounded-xl mx-auto w-16 h-20 dark:bg-zinc900 dark:hover:bg-zinc800 bg-zinc100 hover:bg-zinc200 transition"
+        >
+          <Arrow
+            _class="mx-auto text-hoverText -rotate-90"
+            height="32"
+            width="32"
+          />
+        </button>
+
+        <div class="flex justify-between gap-5">
+          <button
+            @click="isGameStarted ? GameOver() : Start()"
+            class="shadow-xl text-hoverText outline-none border border-zinc300 dark:border-zinc600 mb-24 p-4 rounded-xl mx-auto w-40 h-20 dark:bg-zinc900 dark:hover:bg-zinc800 bg-zinc100 hover:bg-zinc200 transition"
+          >
+            {{ isGameStarted ? "Stop Game" : "Start New Game" }}
+          </button>
+          <button
+            :disabled="isGameOver"
+            @click="Pause"
+            class="shadow-xl outline-none w-24 h-20 border border-zinc300 dark:border-zinc600 p-4 rounded-xl mx-auto dark:bg-zinc900 dark:hover:bg-zinc800 bg-zinc100 hover:bg-zinc200 transition"
+          >
+            <Play
+              v-if="isPaused"
+              _class="mx-auto text-hoverText"
+              width="32"
+              height="32"
+            />
+            <PauseImg
+              v-else
+              _class="mx-auto text-hoverText"
+              width="32"
+              height="32"
+            />
+          </button>
         </div>
+      </div>
     </div>
+
+    <div id="tetrisBoard" class="mt-10 mx-1 lg:mx-10 xl:mx-16 mb-10">
+      <div class="row" v-for="(row, index) in board.cells" :key="index">
+        <div
+          class="cell"
+          :style="`background-color: ${col.color}`"
+          style="color: blueviolet"
+          v-for="col in row"
+          :key="col.id"
+        ></div>
+      </div>
+    </div>
+
+    <div class="w-1/3 mt-10">
+      <Auth @player-exit="playerExitEmit" :isGameStarted />
+
+      <div
+        class="border border-zinc200 dark:border-zinc800 rounded-2xl p-10 h-80 mb-10"
+      >
+        <div class="flex gap-3">
+          <Players _class="text-zinc500" width="32" height="32" />
+          <h4 class="text-2xl font-semibold mb-5">Best players</h4>
+        </div>
+        <div v-for="{name, record} in BestPlayers" :key="name" 
+            class="flex justify-between items-center"
+        >
+            <p class="text-xl leading-10 text-hoverText">{{ name }}:</p>
+            <span class="text-zinc500">{{ record }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 <style scoped>
+#tetrisBoard {
+  width: fit-content;
+  border: 10px solid greenyellow;
+}
 
-    #tetrisBoard {
-        width: fit-content;
-        border: 10px solid greenyellow;
-    }
+.row {
+  display: flex;
+}
+.cell {
+  transition-property: color, background-color, border-color,
+    text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter,
+    backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 100ms;
 
-    .row {
-        display: flex;
-    }
-    .cell {
-        transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
-        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-        transition-duration: 100ms;
-
-        height: 35px;
-        width: 35px;
-        border: 1px solid rgb(48, 47, 47);
-    }
-
+  height: 35px;
+  width: 35px;
+  border: 1px solid rgb(48, 47, 47);
+}
 </style>
