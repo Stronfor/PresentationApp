@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, type PropType } from "vue";
+import { ref } from "vue";
 import { useTetrisStore } from "../store/Tetris.strore";
 import { storeToRefs } from "pinia";
 
@@ -37,12 +37,6 @@ const SignIn = async () => {
   playerPass.value = "";
 };
 
-const Exit = () => {
-    setPlayerName("");
-    setPlayerRecord(0);
-    setPlayerLastGame("");
-    emits("playerExit");
-};
 </script>
 <template>
   <div class="border border-zinc200 dark:border-zinc800 rounded-2xl p-6 mb-10">
@@ -101,7 +95,7 @@ const Exit = () => {
       <template class="flex justify-end">
         <button
           class="py-2 px-5 hover:bg-zinc600 dark:hover:bg-zinc600 dark:bg-zinc700 bg-zinc800 transition rounded-md text-zinc100"
-          @click="Exit"
+          @click="emits('playerExit')"
         >
           EXIT
         </button>

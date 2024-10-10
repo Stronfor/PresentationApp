@@ -10,13 +10,6 @@ import { useColorMode } from "@vueuse/core";
 import Light from "./components/icons/Light.vue";
 import Dark from "./components/icons/Dark.vue";
 
-import emitter from "@/composables/eventEmitter"
-
-// test for emitter (emit comes from AboutView)
-emitter.on('xyu', (data: Object) => console.log(data))
-emitter.once('once', (data: Object) => console.log('Emitter: once ', data))
-
-
 
 const mode = useColorMode(); // Ref<'dark' | 'light'>
 
@@ -83,11 +76,11 @@ const closePopupOutsideClick = (e: Event) => {
             <RouterLink class="navlink__normal" to="/articles">Articles</RouterLink>
             <RouterLink class="navlink__normal" to="/uses">Uses</RouterLink>
           </menu>
-          <span class="dark:text-zinc600 m-3 text-zinc400 text-sm font-extralight">© 2024 Sergii Kabaliuk. All rights reserved.</span>
+          <span class="dark:text-zinc600 m-3 text-zinc400 text-sm font-extralight">© 2022 Sergii Kabaliuk. All rights reserved.</span>
         </div>
       </footer>
     </div>
-    <Popup
+    <Popup class="fixed w-full top-2"
       :class="{ hidden: isHiddenPopup }"
       @close-popup="isHiddenPopup = true"
       title="Navigation"
