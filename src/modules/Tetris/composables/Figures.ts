@@ -182,7 +182,7 @@ class Figura_I extends Figura {
         }
 
         const isValid = newForm.every(([x, y]) => {
-            return x >= 0 && x < 9 && y >= 0 && y < 19 && board.getCell([x, y])?.isEmpty;
+            return x >= 0 && x <= 9 && y >= 0 && y <= 19 && board.getCell([x, y])?.isEmpty;
         });
     
         if (!isValid) {
@@ -280,7 +280,7 @@ class Figura_T extends Figura {
         }
 
         const isValid = newForm.every(([x, y]) => {
-            return x >= 0 && x < 9 && y >= 0 && y < 19 && board.getCell([x, y])?.isEmpty;
+            return x >= 0 && x <= 9 && y >= 0 && y <= 19 && board.getCell([x, y])?.isEmpty;
         });
     
         if (!isValid) {
@@ -366,7 +366,7 @@ class Figura_L extends Figura {
         }
 
         const isValid = newForm.every(([x, y]) => {
-            return x >= 0 && x < 9 && y >= 0 && y < 19 && board.getCell([x, y])?.isEmpty;
+            return x >= 0 && x <= 9 && y >= 0 && y <= 19 && board.getCell([x, y])?.isEmpty;
         });
         if (!isValid) {
             this.setFigurePositionOnBoard(board);
@@ -451,7 +451,7 @@ class Figura_J extends Figura {
         }
 
         const isValid = newForm.every(([x, y]) => {
-            return x >= 0 && x < 9 && y >= 0 && y < 19 && board.getCell([x, y])?.isEmpty;
+            return x >= 0 && x <= 9 && y >= 0 && y <= 19 && board.getCell([x, y])?.isEmpty;
         });
         if (!isValid) {
             this.setFigurePositionOnBoard(board);
@@ -521,7 +521,7 @@ class Figura_Z extends Figura {
         }
 
         const isValid = newForm.every(([x, y]) => {
-            return x >= 0 && x < 9 && y >= 0 && y < 19 && board.getCell([x, y])?.isEmpty;
+            return x >= 0 && x <= 9 && y >= 0 && y <= 19 && board.getCell([x, y])?.isEmpty;
         });
         if (!isValid) {
             this.setFigurePositionOnBoard(board);
@@ -583,7 +583,7 @@ class Figura_S extends Figura {
         }
 
         const isValid = newForm.every(([x, y]) => {
-            return x >= 0 && x < 9 && y >= 0 && y < 19 && board.getCell([x, y])?.isEmpty;
+            return x >= 0 && x <= 9 && y >= 0 && y <= 19 && board.getCell([x, y])?.isEmpty;
         });
         if (!isValid) {
             this.setFigurePositionOnBoard(board);

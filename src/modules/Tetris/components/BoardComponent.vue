@@ -1,9 +1,9 @@
 <script setup lang="ts">
     import { ref, onUnmounted, onMounted, computed } from "vue";
+    import { useWindowSize } from "@vueuse/core";
 
     import { useTetrisStore } from "../store/Tetris.strore";
     import { storeToRefs } from 'pinia'
-    import { useWindowSize } from "@vueuse/core";
 
     import timeNow from "@/utils/timeNow";
 
@@ -11,6 +11,9 @@
     import FigureFactory from "../composables/Figures"
     import Auth from "./Auth.vue";
     import PopupLogin from "./PopupLogin.vue";
+    import Player from "../composables/Player";
+    import updatePlayer from "../controllers/updatePlayer.put";
+    import getBestPlayer from "../controllers/getBestPlayers.get";
 
     import Arrow from "@/components/icons/Arrow.vue";
     import ArrowRotate from "@/components/icons/ArrowRotate.vue";
@@ -20,10 +23,6 @@
     import Players from "@/components/icons/Players.vue";
 
     import {DegEnum, type IBoard, type IFigures, type IPlayer} from "../composables/types"
-    import Player from "../composables/Player";
-    import updatePlayer from "../controllers/updatePlayer.put";
-    import getBestPlayer from "../controllers/getBestPlayers.get";
-
 
     const { width, height } = useWindowSize();
 
@@ -274,6 +273,7 @@
             @mouseup="btnPushUp = false"
             @touchstart="btnPushUp = true; Rotate()"
             @touchendt="btnPushUp = false"
+            @mouseout.prevent="btnPushUp = false"
             @click="Rotate"
             :style="btnPushUp ? active : null"
             class="shadow-xl -mb-2 opacity-50 shadow-zinc300 dark:shadow-md dark:shadow-zinc500 outline-none border border-zinc300 dark:border-zinc600 p-0 md:p-4 rounded-t-xl rounded-b-3xl mx-auto w-12 h-16 md:w-16 md:h-20 dark:bg-zinc900 dark:hover:bg-zinc800 bg-zinc100 hover:bg-zinc200 transition"
@@ -286,6 +286,7 @@
               @mouseup="btnPushLeft = false"
               @touchstart="btnPushLeft = true; currentFigure.moveLeft(board)"
               @touchend="btnPushLeft = false"
+              @mouseout.prevent="btnPushLeft = false"
               :style="btnPushLeft ? active : null"
               @click="()=> {if(currentFigure)currentFigure.moveLeft(board)}"
               class="shadow-xl opacity-50 dark:shadow-md dark:shadow-zinc500 outline-none border border-zinc300 dark:border-zinc600 p-0 md:p-4 rounded-l-xl rounded-r-3xl md:w-20 md:h-16 w-16 h-12 dark:bg-zinc900 dark:hover:bg-zinc800 bg-zinc100 hover:bg-zinc200 transition"
@@ -297,6 +298,7 @@
               @mouseup.prevent="btnPushRight = false"
               @touchstart="btnPushRight = true; currentFigure.moveRight(board)"
               @touchend="btnPushRight = false"
+              @mouseout.prevent="btnPushRight = false"
               :style="btnPushRight ? active : null"
               @click="()=> {if(currentFigure)currentFigure.moveRight(board)}"
               class="shadow-xl opacity-50 dark:shadow-md dark:shadow-zinc500 outline-none border border-zinc300 dark:border-zinc600 p-0 md:p-4 rounded-r-xl rounded-l-3xl md:w-20 md:h-16 w-16 h-12 dark:bg-zinc900 dark:hover:bg-zinc800 bg-zinc100 hover:bg-zinc200 transition"
@@ -311,6 +313,7 @@
             @mouseup.prevent="speedGame = 500; btnPushDown = false"
             @touchstart="speedGame = 50;btnPushDown = true"
             @touchend="speedGame = 500;btnPushDown = false"
+            @mouseout.prevent="speedGame = 500; btnPushDown = false"
             :style="btnPushDown ? active : null"
             class="mb-10 -mt-2 opacity-50 shadow-xl dark:shadow-md dark:shadow-zinc500 outline-none border border-zinc300 dark:border-zinc600 p-0 md:p-4 rounded-b-xl rounded-t-3xl mx-auto w-12 h-16 md:w-16 md:h-20 dark:bg-zinc900 dark:hover:bg-zinc800 bg-zinc100 hover:bg-zinc200 transition"
           >
@@ -323,6 +326,7 @@
               @mouseup="btnPushStart = false"
               @touchstart="btnPushStart = true; btnStart()"
               @touchend="btnPushStart = false"
+              @mouseout.prevent="btnPushStart = false"
               :style="btnPushStart ? active : null"
               @click="btnStart"
               class="sm:w-30 shadow-xl px-4 rounded-full dark:shadow-md dark:shadow-zinc500 text-hoverText outline-none border border-zinc300 dark:border-zinc600 mb-24 sm:rounded-xl mx-auto h-16  sm:h-20 dark:bg-zinc900 dark:hover:bg-zinc800 bg-zinc100 hover:bg-zinc200 transition"
@@ -335,6 +339,7 @@
               @mouseup="btnPushPause = false"
               @touchstart="btnPushPause = true; Pause()"
               @touchend="btnPushPause = false"
+              @mouseout.prevent="btnPushPause = false"
               :style="btnPushPause ? active : null"
               :disabled="isGameOver"
               @click="Pause"

@@ -10,7 +10,7 @@ fastify.register(import('fastify-bcrypt'), {
     saltWorkFactor: 12
 })
 fastify.register(import('@fastify/cors'), { 
-    origin: 'http://localhost:8080'  // Allow requests from this origin
+    origin: '*', //'http://localhost:8080' // Allow requests from this origin
   });
 
 const db = new Database('tetrisPlayers.db');
