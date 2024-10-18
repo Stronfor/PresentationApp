@@ -14,7 +14,7 @@ defineProps({
 
 const TetrisStore = useTetrisStore();
 
-const { player } = storeToRefs(TetrisStore);
+const { getPlayerStore } = storeToRefs(TetrisStore);
 const { setPlayer, setPlayerLastGame, setPlayerRecord, setPlayerName } =
   TetrisStore;
 
@@ -40,7 +40,7 @@ const SignIn = async () => {
 </script>
 <template>
   <div class="border border-zinc200 dark:border-zinc800 rounded-2xl p-6 mb-10">
-    <div v-if="!player.name">
+    <div v-if="!getPlayerStore.name">
       <h4 class="text-2xl font-semibold mb-5">Enter for save score</h4>
       <form class="mt-6">
         <input
@@ -83,14 +83,14 @@ const SignIn = async () => {
     </div>
     <div v-else>
       <p class="mb-8 text-center">
-        Hello <span class="text-xl">{{ player.name }}</span>
+        Hello <span class="text-xl">{{ getPlayerStore.name }}</span>
       </p>
       <section class="flex justify-between">
-        <span class="mb-4">Record: </span><span>{{ player.record }}</span>
+        <span class="mb-4">Record: </span><span>{{ getPlayerStore.record }}</span>
       </section>
       <section class="flex justify-between">
         <p class="mb-8">Last Game:</p>
-        <span>{{ player.lastGame }}</span>
+        <span>{{ getPlayerStore.lastGame }}</span>
       </section>
       <template class="flex justify-end">
         <button

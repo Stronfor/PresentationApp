@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import type { IPlayerServerData } from '@/modules/Tetris/composables/types'
 
@@ -9,6 +9,8 @@ export const useTetrisStore = defineStore('tetris', () => {
     lastGame: "",
     record: 0
   });
+
+  const getPlayerStore = computed(()=> player.value)
 
   const setPlayer = (playerData: IPlayerServerData) => {
     player.value = {...playerData}
@@ -27,5 +29,5 @@ export const useTetrisStore = defineStore('tetris', () => {
   }
   
 
-  return { player, setPlayer, setPlayerLastGame, setPlayerRecord, setPlayerName }
+  return { getPlayerStore, setPlayer, setPlayerLastGame, setPlayerRecord, setPlayerName }
 })
