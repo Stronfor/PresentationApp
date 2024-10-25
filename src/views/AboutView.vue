@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import BoardComponent from "../modules/Tetris/components/BoardComponent.vue";
-
+import {Tetris} from "../modules/Tetris";
 </script>
 <template>
   <div class="about">
-    <BoardComponent />
+    <Tetris />
   </div>
 </template>
