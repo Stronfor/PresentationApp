@@ -646,6 +646,10 @@ video {
   right: 12rem;
 }
 
+.right-\[5\%\] {
+  right: 5%;
+}
+
 .top-0 {
   top: 0px;
 }
@@ -656,6 +660,10 @@ video {
 
 .top-2 {
   top: 0.5rem;
+}
+
+.top-28 {
+  top: 7rem;
 }
 
 .top-4 {
@@ -670,8 +678,16 @@ video {
   top: 500px;
 }
 
+.z-0 {
+  z-index: 0;
+}
+
 .z-10 {
   z-index: 10;
+}
+
+.z-20 {
+  z-index: 20;
 }
 
 .m-3 {
@@ -1137,8 +1153,8 @@ video {
   background-color: rgb(39 39 42 / var(--tw-bg-opacity));
 }
 
-.bg-\[url\(\'\@\/assets\/img\/Timoty\.png\'\)\] {
-  background-image: url('@/assets/img/Timoty.png');
+.bg-\[url\(\'\@\/assets\/img\/Sergio\.png\'\)\] {
+  background-image: url('@/assets/img/Sergio.png');
 }
 
 .bg-right-top {

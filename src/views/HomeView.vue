@@ -11,9 +11,9 @@ import Linkedin_icon from "../components/icons/Linkedin.vue";
 
 <template>
   <div class="bg-zinc50 dark:bg-zinc900 pb-10">
-    <div class="flex items-center justify-between bg-[url('@/assets/img/Timoty.png')] bg-no-repeat bg-right-top h-[450px]">
-      <div class="mt-28 lg:pr-14 lg:max-w-[70%] w-full">
-        <h1 class="text-4xl font-bold sm:text-5xl tracking-tight mb-6">Software engineer, designer,<br/> and 3D printing enthusiast</h1>
+    <div class="flex items-center justify-between h-[450px]">
+      <div class="mt-28 lg:pr-14 lg:max-w-[70%] w-full z-10">
+        <h1 class="text-4xl font-bold sm:text-5xl tracking-tight mb-6">Software engineer, designer<br/> and 3D printing enthusiast</h1>
         <p class="text-base leading-7 opacity-75 mb-6">
           I’m Sergio, a software  engineer with more than four years of experience from Italy.<br/>
           I`m a developer of modern modular, adaptive applications with the latest architectural approaches to development.
@@ -25,6 +25,7 @@ import Linkedin_icon from "../components/icons/Linkedin.vue";
           <a class="group" target="_blank" href="https://www.linkedin.com/in/sergio-kabaliuk-12b707226/"><Linkedin_icon _class="navlink_social" width="25px" height="20px"/></a>
         </div>
       </div>
+      <img class="absolute top-28 right-[5%] z-0" src="@/assets/img/Untitled.png"  width="500" alt="Sergio">
     </div>
     <HomeImages />
     <div class="mt-24">

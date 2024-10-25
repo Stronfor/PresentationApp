@@ -80,7 +80,7 @@ const closePopupOutsideClick = (e: Event) => {
         </div>
       </footer>
     </div>
-    <Popup class="fixed w-full top-2"
+    <Popup class="fixed w-full top-2 z-20"
       :class="{ hidden: isHiddenPopup }"
       @close-popup="isHiddenPopup = true"
       title="Navigation"
