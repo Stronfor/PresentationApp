@@ -71,6 +71,7 @@ const closePopupOutsideClick = (e: Event) => {
       <footer class="border-t border-zinc200 dark:border-zinc700 py-12">
         <div class="md:justify-between md:flex-row flex flex-col items-center">
           <menu class="flex gap-3 text-sm">
+            <RouterLink class="navlink__normal" to="/">Home</RouterLink>
             <RouterLink class="navlink__normal" to="/about">About</RouterLink>
             <RouterLink class="navlink__normal" to="/projects">Projects</RouterLink>
             <RouterLink class="navlink__normal" to="/articles">Articles</RouterLink>

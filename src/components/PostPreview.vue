@@ -1,17 +1,10 @@
 <script setup lang="ts">
-import { defineAsyncComponent, type DefineComponent } from "vue";
 import PostPreview from "../../public/posts/postsPreview"
 import MyJobs from "../../public/posts/MyJobs"
 
 import Letter from "@/components/icons/Letter.vue"
 import Portfolio from "@/components/icons/Portfolio.vue"
-
-const iconsMyJob: any = {
-    'Starbucks': defineAsyncComponent(() => import("@/components/icons/Starbucks.vue")),
-    'Airbnb': defineAsyncComponent(() => import("@/components/icons/Airbnb.vue")),
-    'Facebook': defineAsyncComponent(() => import("@/components/icons/Facebook.vue")),
-    'Google': defineAsyncComponent(() => import("@/components/icons/Google.vue")),
-}
+import xp_work from "@/components/icons/xp_work.vue";
 
 </script>
 
@@ -19,13 +12,13 @@ const iconsMyJob: any = {
     <div class="mx-auto grid max-w-xl grid-cols-1 gap-y-20 lg:max-w-none lg:grid-cols-2">
         <div class="flex flex-col gap-12">
             <RouterLink :to="`post/${id}`" 
-                v-for="{ id, date, title, text } of PostPreview" 
+                v-for="{ id, date, title, preview } of PostPreview" 
                 :key="id"
             >
                 <article class="p-4 pt-6 pb-6 rounded-2xl hover:bg-zinc100 dark:hover:bg-zinc800  transition">
                     <div class="border-s-[3px] ps-4 leading-4 mb-4 text-zinc400 dark:text-zinc500 text-sm">{{ date }}</div>
                     <h3 class="mb-4">{{ title }}</h3>
-                    <section class="z-10 mb-4 text-zinc500 dark:text-zinc400 text-sm leading-6">{{ text }}</section>
+                    <section class="z-10 mb-4 text-zinc500 dark:text-zinc400 text-sm leading-6">{{ preview }}</section>
                     <div class="text-sm text-teal500">Read article <span>></span></div>
                 </article>
             </RouterLink>
@@ -55,7 +48,7 @@ const iconsMyJob: any = {
                 <div class="mt-6">
                     <div class="flex gap-4 items-center mb-4" v-for="{name, period, positionAtWork} of MyJobs" :key="name">
                         <div class="p-2 border border-zinc200 dark:border-zinc800 dark:bg-zinc800 rounded-full">
-                            <component :is="iconsMyJob[name]"  height="2rem" width="2rem" />
+                            <xp_work _class="text-hoverText" height="2rem" width="2rem" />
                         </div>
                         <div class="w-full">
                             <p>{{ name }}</p>
@@ -67,7 +60,9 @@ const iconsMyJob: any = {
                     </div>
                 </div>
                 <div class="mt-6">
-                    <button class="w-full hover:bg-zinc200 dark:hover:bg-zinc700 transition text-zinc800 bg-zinc100 dark:text-zinc200 dark:bg-zinc800 p-2 rounded-md">Download CV</button>
+                    <button class="w-full hover:bg-zinc200 dark:hover:bg-zinc700 transition text-zinc800 bg-zinc100 dark:text-zinc200 dark:bg-zinc800 p-2 rounded-md">
+                        <a href="/Serg_CV_2024.pdf" download >Download CV</a>
+                    </button>
                 </div>
             </div>
         </div>
