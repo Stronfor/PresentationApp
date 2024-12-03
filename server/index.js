@@ -28,7 +28,7 @@ db.prepare(`
 
 
 // add a new player
-fastify.post('/addPlayer', async (request, reply) => {
+fastify.post('/api/addPlayer', async (request, reply) => {
     const { name, password, record, lastGame } = request.body;
 
     if (!name || !password) {
@@ -51,7 +51,7 @@ fastify.post('/addPlayer', async (request, reply) => {
 });
 
 //get player
-fastify.post('/getPlayer', async (request, reply) => {
+fastify.post('/api/getPlayer', async (request, reply) => {
     const { name, password } = request.body;
 
     try {
@@ -74,7 +74,7 @@ fastify.post('/getPlayer', async (request, reply) => {
 });
 
 // delete a player by name
-fastify.delete('/deletePlayer', async (request, reply) => {
+fastify.delete('/api/deletePlayer', async (request, reply) => {
     const { name } = request.body;
 
     try {
@@ -91,7 +91,7 @@ fastify.delete('/deletePlayer', async (request, reply) => {
 });
 
 // get all players
-fastify.get('/allPlayers', async (request, reply) => {
+fastify.get('/api/allPlayers', async (request, reply) => {
     try {
         const players = db.prepare(`SELECT * FROM players`).all();
         if(!players){
@@ -103,7 +103,7 @@ fastify.get('/allPlayers', async (request, reply) => {
     }
 });
 
-fastify.get('/bestPlayers', async (request, reply) => {
+fastify.get('/api/bestPlayers', async (request, reply) => {
     try {
         const players = db.prepare(`SELECT name, record FROM players`).all();
         if(!players){
@@ -117,7 +117,7 @@ fastify.get('/bestPlayers', async (request, reply) => {
 });
 
 // update player
-fastify.put('/updatePlayer', async (request, reply) => {
+fastify.put('/api/updatePlayer', async (request, reply) => {
     try {
         const { name, record, lastGame } = request.body;
     
