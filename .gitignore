@@ -30,3 +30,7 @@ coverage
 
 *.tsbuildinfo
 infoServer.txt
+
+
+# Ignore all .db files
+*.db
