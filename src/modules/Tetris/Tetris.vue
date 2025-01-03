@@ -98,6 +98,7 @@ const GameOver = async () => {
   isPaused.value = true;
 
   if (currentPlayer.value?.name) {
+    currentPlayer.value.record = getPlayerStore.value.record
     const record =
       currentPlayer.value?.record < currentPlayer.value?.score
         ? currentPlayer.value?.score

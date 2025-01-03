@@ -76,7 +76,7 @@ const SignIn = async () => {
             class="py-2 px-5 hover:bg-zinc600 dark:hover:bg-zinc600 dark:bg-zinc700 bg-zinc800 transition rounded-md text-zinc100"
             @click.prevent="SignIn"
           >
-            Signin
+            Register
           </button>
         </div>
       </form>
