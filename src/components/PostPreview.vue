@@ -2,8 +2,8 @@
 import PostPreview from "../../public/posts/postsPreview"
 import MyJobs from "../../public/posts/MyJobs"
 
-import Letter from "@/components/icons/Letter.vue"
-import Portfolio from "@/components/icons/Portfolio.vue"
+import LetterIcon from "@/components/icons/LetterIcon.vue"
+import PortfolioIcon from "@/components/icons/PortfolioIcon.vue"
 import xp_work from "@/components/icons/xp_work.vue";
 
 </script>
@@ -26,7 +26,7 @@ import xp_work from "@/components/icons/xp_work.vue";
         <div class="space-y-10 lg:pl-16 xl:pl-24">
             <div class="border border-zinc200 dark:border-zinc800 p-8 rounded-2xl">
                 <div class="flex gap-3">
-                    <Letter height="1.5rem" width="1.5rem" _class="text-zinc500" />
+                    <LetterIcon height="1.5rem" width="1.5rem" _class="text-zinc500" />
                     <h4 class="font-semibold">Stay up to date</h4>
                 </div>
                 <p class="mt-2 text-sm text-zinc500 dark:text-zinc400 leading-6">
@@ -42,7 +42,7 @@ import xp_work from "@/components/icons/xp_work.vue";
             </div>
             <div id="work_history" class="border border-zinc200 dark:border-zinc800 p-8 rounded-2xl">
                 <div class="flex gap-3">
-                    <Portfolio height="1.5rem" width="1.5rem" _class="text-zinc500" />
+                    <PortfolioIcon height="1.5rem" width="1.5rem" _class="text-zinc500" />
                     <h4 class="font-semibold">Work</h4>
                 </div>
                 <div class="mt-6">

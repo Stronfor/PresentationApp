@@ -1,3 +1,3 @@
-import Tetris from "./Tetris.vue"
+import TetrisMain from "./TetrisMain.vue"
 
-export {Tetris}
+export {TetrisMain}

@@ -1,10 +1,10 @@
 <script setup lang="ts">
     import {ref, onUnmounted, type PropType } from "vue";
 
-    import Arrow from "@/components/icons/Arrow.vue";
+    import ArrowIcon from "@/components/icons/ArrowIcon.vue";
     import ArrowRotate from "@/components/icons/ArrowRotate.vue";
-    import Play from "@/components/icons/Play.vue";
-    import PauseImg from "@/components/icons/Pause.vue";
+    import PlayIcon from "@/components/icons/PlayIcon.vue";
+    import PauseImg from "@/components/icons/PauseIcon.vue";
 
     import {DegEnum, type IBoard, type IFigures} from "../composables/types"
 
@@ -126,7 +126,7 @@
                 @click="moveLeft()"
                 class="shadow-xl opacity-50 dark:shadow-md dark:shadow-zinc500 outline-none border border-zinc300 dark:border-zinc600 p-0 md:p-4 rounded-l-xl rounded-r-3xl md:w-20 md:h-16 w-16 h-12 dark:bg-zinc900 dark:hover:bg-zinc800 bg-zinc100 hover:bg-zinc200 transition"
             >
-                <Arrow _class="mx-auto text-hoverText md:h-[32px] md:w-[32px] h-[26px] w-[26px]" />
+                <ArrowIcon _class="mx-auto text-hoverText md:h-[32px] md:w-[32px] h-[26px] w-[26px]" />
             </button>
             <button
                 @mousedown.prevent="btnPushRight = true"
@@ -138,7 +138,7 @@
                 @click="moveRight()"
                 class="shadow-xl opacity-50 dark:shadow-md dark:shadow-zinc500 outline-none border border-zinc300 dark:border-zinc600 p-0 md:p-4 rounded-r-xl rounded-l-3xl md:w-20 md:h-16 w-16 h-12 dark:bg-zinc900 dark:hover:bg-zinc800 bg-zinc100 hover:bg-zinc200 transition"
             >
-                <Arrow _class="mx-auto text-hoverText rotate-180 md:h-[32px] md:w-[32px] h-[26px] w-[26px]" />
+                <ArrowIcon _class="mx-auto text-hoverText rotate-180 md:h-[32px] md:w-[32px] h-[26px] w-[26px]" />
             </button>
         </div>
         <button
@@ -150,7 +150,7 @@
             :style="btnPushDown ? active : null"
             class="mb-10 -mt-2 opacity-50 shadow-xl dark:shadow-md dark:shadow-zinc500 outline-none border border-zinc300 dark:border-zinc600 p-0 md:p-4 rounded-b-xl rounded-t-3xl mx-auto w-12 h-16 md:w-16 md:h-20 dark:bg-zinc900 dark:hover:bg-zinc800 bg-zinc100 hover:bg-zinc200 transition"
         >
-            <Arrow _class="mx-auto text-hoverText -rotate-90 md:h-[32px] md:w-[32px] h-[26px] w-[26px]" />
+            <ArrowIcon _class="mx-auto text-hoverText -rotate-90 md:h-[32px] md:w-[32px] h-[26px] w-[26px]" />
         </button>
 
         <div class="absolute md:relative md:right-0 top-12 right-48 flex mt-10 justify-between gap-5">
@@ -178,7 +178,7 @@
                 @click="emits('pause')"
                 class="shadow-xl dark:shadow-md md:h-20 dark:shadow-zinc500 rounded-full outline-none md:w-24 h-16 w-20 border border-zinc300 dark:border-zinc600 p-4 md:rounded-xl mx-auto dark:bg-zinc900 dark:hover:bg-zinc800 bg-zinc100 hover:bg-zinc200 transition"
             >
-                <Play
+                <PlayIcon
                     v-if="isPaused"
                     _class="mx-auto text-hoverText"
                     width="32"

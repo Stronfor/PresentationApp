@@ -10,5 +10,9 @@ module.exports = {
   ],
   parserOptions: {
     ecmaVersion: 'latest'
-  }
+  },
+  env: {
+    node: true,
+    es2021: true,
+  },
 }

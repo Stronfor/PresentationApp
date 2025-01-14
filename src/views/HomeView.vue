@@ -2,17 +2,10 @@
 import HomeImages from "@/components/HomeImages.vue";
 import PostPreview from "@/components/PostPreview.vue";
 
-import Twitter_icon from "../components/icons/Twitter.vue";
-import Instagram_icon from "../components/icons/Instagram.vue";
-import Github_icon from "../components/icons/Github.vue";
-import Linkedin_icon from "../components/icons/Linkedin.vue";
-
-
-import { useColorMode } from "@vueuse/core";
-
-const mode = useColorMode(); // Ref<'dark' | 'light'>
-
-
+import Twitter_icon from "../components/icons/TwitterIcon.vue";
+import Instagram_icon from "../components/icons/InstagramIcon.vue";
+import Github_icon from "../components/icons/GithubIcon.vue";
+import Linkedin_icon from "../components/icons/LinkedinIcon.vue";
 
 </script>
 

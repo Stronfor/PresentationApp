@@ -20,7 +20,7 @@ class Figura implements IFigures {
             rightCells: this.rightCells,
             downCells: this.downCells
         }
-    };
+    }
 
     clearFigurePositionOnBoard(board: IBoard){
         this.figureForm.forEach((item) => {
@@ -30,7 +30,7 @@ class Figura implements IFigures {
                 cell.changeEmpty(true);
             }
         })
-    };
+    }
 
     setFigurePositionOnBoard(board: IBoard){
         this.figureForm.forEach((item) => {
@@ -40,7 +40,7 @@ class Figura implements IFigures {
                 cell.changeEmpty(false);
             }
         })
-    };
+    }
 
     changeRotationCells(figure: number[][],one:number[],two:number[],three:number[],four:number[]){
         return [
@@ -62,13 +62,13 @@ class Figura implements IFigures {
         this.downCells.forEach((item) => item[1]+=1);
         this.rightCells.forEach((item) => item[1]+=1);
         this.leftCells.forEach((item) => item[1]+=1);
-    };
+    }
 
     moveRight(board: IBoard){
         let isCanMove: boolean = false
         let isFind: boolean = false
 
-        this.rightCells.forEach(([x, y]) => {
+        this.rightCells.forEach(([x]) => {
             if(!isFind){
                 if(x < 9) {
                     isCanMove = true;
@@ -110,7 +110,7 @@ class Figura implements IFigures {
         let isCanMove: boolean = false
         let isFind: boolean = false
 
-        this.leftCells.forEach(([x, y]) => {
+        this.leftCells.forEach(([x]) => {
             if(!isFind){
                 if(x > 0) {
                     isCanMove = true;
@@ -147,7 +147,7 @@ class Figura implements IFigures {
         }
     }
 
-    rotate(deg: DegEnum, board: IBoard): void{}
+    rotate(deg: DegEnum, board: IBoard): void{deg; board}
 
     rotateDeg(deg: DegEnum, board: IBoard): void {
         if(this.name !== 'O' && this.name !== 'D'){

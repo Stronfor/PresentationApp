@@ -3,7 +3,7 @@
 export interface IBoard {
     cells: ICell[][]
     initCells():void
-    getCell([]): ICell | undefined
+    getCell(arr: number[]): ICell | undefined
     setFigure(figure: IFigures):void
     isBoardFull():boolean
     deleteRow(index: number): void

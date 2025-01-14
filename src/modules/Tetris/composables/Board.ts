@@ -1,5 +1,4 @@
 import Cell from "./Cell";
-import Player from "./Player";
 import { type ICell, type IBoard, type IFigures, type IPlayer } from "./types";
 
 export default class Board implements IBoard {

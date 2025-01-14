@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { type PropType } from "vue";
-import Players from "@/components/icons/Players.vue";
+import PlayersIcon from "@/components/icons/PlayersIcon.vue";
 
 defineProps({
   BestPlayers: {type: Array as PropType<{ name: string; record: number }[]>,required: true},
@@ -11,7 +11,7 @@ defineProps({
     class="border border-zinc200 dark:border-zinc800 rounded-2xl p-10 max-h-80 mb-10"
   >
     <div class="flex gap-3">
-      <Players _class="text-zinc500" width="32" height="32" />
+      <PlayersIcon _class="text-zinc500" width="32" height="32" />
       <h4 class="text-2xl font-semibold mb-5">Best players</h4>
     </div>
     <div

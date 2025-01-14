@@ -15,8 +15,7 @@ defineProps({
 const TetrisStore = useTetrisStore();
 
 const { getPlayerStore } = storeToRefs(TetrisStore);
-const { setPlayer, setPlayerLastGame, setPlayerRecord, setPlayerName } =
-  TetrisStore;
+const { setPlayer } = TetrisStore;
 
 const playerName = ref("");
 const playerPass = ref("");

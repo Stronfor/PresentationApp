@@ -7,7 +7,7 @@ import { storeToRefs } from "pinia";
 import timeNow from "@/utils/timeNow";
 import AuthMini from "@/modules/Tetris/components/AuthMini.vue";
 import BtnsControl from "@/modules/Tetris/components/BtnsControl.vue";
-import Auth from "@/modules/Tetris/components/Auth.vue";
+import AuthMain from "@/modules/Tetris/components/AuthMain.vue";
 import PopupLogin from "@/modules/Tetris/components/PopupLogin.vue";
 import BestPlayer from "@/modules/Tetris/components/BestPlayer.vue";
 
@@ -234,7 +234,7 @@ const cellSize = computed(() => {
       </div>
 
       <div class="w-full md:w-1/3 mt-28">
-        <Auth v-if="width > 768" @player-exit="Exit" :isGameStarted />
+        <AuthMain v-if="width > 768" @player-exit="Exit" :isGameStarted />
         <BestPlayer :BestPlayers />
       </div>
     </div>
@@ -245,7 +245,7 @@ const cellSize = computed(() => {
       @close-popup="isHiddenLogin = true"
       title="Enter for save score"
     >
-      <Auth @player-exit="Exit" :isGameStarted />
+      <AuthMain @player-exit="Exit" :isGameStarted />
     </PopupLogin>
   </div>
 </template>

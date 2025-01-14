@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { RouterView } from "vue-router";
-import Navigation from "./components/Navigation.vue";
-import Popup from "./components/Popup.vue";
+import MyNavigation from "./components/MyNavigation.vue";
+import MyPopup from "./components/MyPopup.vue";
 import menuList from "./composables/menuList";
 
 import { useColorMode } from "@vueuse/core";
 
-import Light from "./components/icons/Light.vue";
-import Dark from "./components/icons/Dark.vue";
+import LightIcon from "./components/icons/LightIcon.vue";
+import DarkIcon from "./components/icons/DarkIcon.vue";
 
 
 const mode = useColorMode(); // Ref<'dark' | 'light'>
@@ -43,19 +43,19 @@ const closePopupOutsideClick = (e: Event) => {
       <header class="h-20">
         <div class="flex items-center justify-end md:justify-between pt-6 mb-5">
           <div class="w-5"></div>
-          <Navigation @click-on-menu="isHiddenPopup = !isHiddenPopup" />
+          <MyNavigation @click-on-menu="isHiddenPopup = !isHiddenPopup" />
           <button
             @click="changeColorMode"
             class="h-11 w-12 md:mr-10 rounded-full border-2 shadow-sm shadow-zinc300 dark:shadow-sm dark:shadow-zinc600 border-borderLight hover:bg-lightBg dark:border-borderDark dark:hover:bg-darkBg"
           >
-            <Light
+            <LightIcon
               v-if="mode === 'light'"
               class="m-auto"
               color="gray"
               width="1.6em"
               height="1.6em"
             />
-            <Dark
+            <DarkIcon
               v-else
               class="m-auto"
               color="#1fbbaa"
@@ -81,7 +81,7 @@ const closePopupOutsideClick = (e: Event) => {
         </div>
       </footer>
     </div>
-    <Popup class="fixed w-full top-2 z-20"
+    <MyPopup class="fixed w-full top-2 z-20"
       :class="{ hidden: isHiddenPopup }"
       @close-popup="isHiddenPopup = true"
       title="Navigation"
@@ -97,6 +97,6 @@ const closePopupOutsideClick = (e: Event) => {
           {{ name }}
         </RouterLink>
       </nav>
-    </Popup>
+    </MyPopup>
   </div>
 </template>

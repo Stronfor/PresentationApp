@@ -4,7 +4,7 @@ import { useWindowSize } from "@vueuse/core";
 
 import menuList from "@/composables/menuList";
 
-const { width, height } = useWindowSize();
+const { width } = useWindowSize();
 
 const emit = defineEmits(["click-on-menu"]);
 </script>
